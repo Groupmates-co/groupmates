@@ -1,0 +1,24 @@
+<div id="setpassword">
+
+	<h3 class="text-center">
+		<a href="<%= root_path %>"><%= image_tag 'groupmates_logo_white2.png', size: '50x50' %></a><br/>
+		<%= 1 == params[:initial] ? "Set your password" : "Change your password" %>
+	</h3>
+
+	<div class="row">
+		<div class="small-10 medium-6 large-4 small-centered medium-centered large-centered columns main-block">
+			<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+				<%= devise_error_messages! %>
+				<%= f.hidden_field :redirection, :value => params[:initial] %>
+				<%= f.hidden_field :reset_password_token %>
+
+				<%= f.label :password, "New password" %><br>
+				<%= f.password_field :password, autofocus: true, autocomplete: "off" %>
+				<%= f.label :password_confirmation, "Confirm new password" %>
+				<%= f.password_field :password_confirmation, autocomplete: "off" %>
+				<%= f.submit "Change my password", class: "button expand tiny" %>
+			<% end %>
+		</div>
+	</div>
+
+</div>

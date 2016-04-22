@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Groupmates - Collaboration in a new light</title>
+    <meta name="description" content="Groupmates is a collaboration tool that integrates communication, planning and file storage features, used in businesses and education"/>
+    <meta name="author" content="Thomas Quiroga"/>
+    <meta name="copyright" content="Groupmates, all right reserved"/>
+    <meta content='<%= user_signed_in? ? current_user.id : "" %>' name='user-id'/>
+    <%= csrf_meta_tags %>
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic|Montserrat:400,700|Vollkorn:400italic,400|Source+Sans+Pro:200,300,400' rel='stylesheet' type='text/css'>
+    <link rel="apple-touch-icon" sizes="57x57" href="<%= asset_path('apple-touch-icon-57x57.png') %>">
+    <link rel="apple-touch-icon" sizes="114x114" href="<%= asset_path('apple-touch-icon-114x114.png') %>">
+    <link rel="apple-touch-icon" sizes="72x72" href="<%= asset_path('apple-touch-icon-72x72.png') %>">
+    <link rel="apple-touch-icon" sizes="60x60" href="<%= asset_path('apple-touch-icon-60x60.png') %>">
+    <link rel="apple-touch-icon" sizes="76x76" href="<%= asset_path('apple-touch-icon-76x76.png') %>">
+    <link rel="icon" type="image/png" href="<%= asset_path('favicon-96x96.png') %>" sizes="96x96">
+    <link rel="icon" type="image/png" href="<%= asset_path('favicon-16x16.png') %>" sizes="16x16">
+    <link rel="icon" type="image/png" href="<%= asset_path('favicon-32x32.png') %>" sizes="32x32">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <%= favicon_link_tag 'favicon.ico' %>
+    <%= stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true %>
+    <%= stylesheet_link_tag "home", media: "all", "data-turbolinks-track" => true %>
+    <%= javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js", media: "all", "data-turbolinks-track" => true %>
+    <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "Organization",
+        "url": "https://groupmates.co",
+        "logo": "https://s3-eu-west-1.amazonaws.com/groupmates/groupmates_icon2.png"
+        "sameAs" : [ "https://www.facebook.com/groupmates",
+          "https://twitter.com/Groupmates_UK",
+          "https://instagram.com/groupmates_uk/",
+          "https://www.linkedin.com/company/4836043",
+          "https://plus.google.com/109784277635889448228"]
+      }
+    </script>
+    <%= javascript_include_tag "application/cookie_consent.js" %>
+
+    <!-- Cookies -->
+    <script class="cc-onconsent-analytics" type="text/plain">
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-48385432-4', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+    </script>
+
+    <script class="cc-onconsent-analytics" type="text/plain"></script>
+    <!-- End Cookies -->
+  </head>
+  <body>
+
+    <div id="navigation" class="contain-to-grid">
+      <nav class="top-bar" data-topbar>
+        <ul class="title-area">
+          <li class="name">
+            <h1>
+              <a href="<%= url_for root_path %>">
+                <%= image_tag "groupmates_logo_2.png", width: 150, alt: "Groupmates" %>
+              </a>
+            </h1>
+          </li>
+          <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+        </ul>
+        <section class="top-bar-section">
+          <!-- Right Nav Section -->
+          <ul class="right">
+            <% if user_signed_in? %>
+
+            <li><%= link_to 'My Projects', projects_path %></li>
+
+            <li class="has-dropdown">
+                <a href="#"><%= image_tag user_image_url(:thumb), size: "40x40", class: "circle"  %> &nbsp; <strong><%= "#{current_user.first_name} #{current_user.last_name}" %></strong></a>
+                <ul class="dropdown">
+                    <li><%= link_to 'Edit profile', edit_user_registration_path, :class => 'navbar-link' %></li>
+                    <li><%= link_to "Sign out", destroy_user_session_path, method: :delete, :class => 'navbar-link'  %></li>
+                </ul>
+            </li>
+            <% else %>
+            <!-- <li class="active"><a href="<%= features_path %>">Features</a></li> -->
+              <!-- <li class="active"><a href="<%= business_path %>">Business</a></li> -->
+              <!-- <li class="active"><a href="<%= education_path %>">Education</a></li> -->
+              <li><a class="button tiny secondary" href="<%= url_for new_user_session_path %>">Sign in</a></li>
+            <% end %>
+          </ul>
+        </section>
+      </nav>
+    </div>
+    <!--end of navigation-->
+    <div id="main-container">
+      <%= yield %>
+      <!--end of clients section-->
+      <section id="footer">
+        <div class="row">
+          <div class="large-12 columns text-center">
+
+          <nav>
+            <ul>
+              <!-- <li><a href="http://blog.groupmates.uk">Blog</a></li> -->
+              <li><a href="http://groupmates.freshdesk.com">Support</a></li>
+              <li><a href="<%= team_path %>">Team</a></li>
+              <li><a href="<%= url_for contact_path %>">Contact</a></li>
+              <li><a href="<%= terms_path %>">Terms &amp; conditions</a></li>
+            </ul>
+          </nav>
+            <ul>
+              <li><a target="_blank" href="https://www.facebook.com/groupmates"><i class="fa fa-facebook"></i></a></li>
+              <li><a target="_blank" href="https://twitter.com/Groupmates_UK"><i class="fa fa-twitter"></i></a></li>
+              <li><a target="_blank" href="https://plus.google.com/109784277635889448228" rel="publisher"><i class="fa fa-google-plus"></i></a></li>
+              <li><a target="_blank" href="https://www.linkedin.com/company/4836043" rel="publisher"><i class="fa fa-linkedin"></i></a></li>
+            </ul>
+
+            <h6>Copyright 2014 &copy; Groupmates, All rights reserved<a href="<%= url_for new_user_session_path %>">.</a></h6>
+            <small>Groupmates LTD, Registration number SC494062</small><br>
+
+<!--             <p class="espark">
+              Accelerated by:<br>
+              <a href="http://www.entrepreneurial-spark.com/" target="_blank">
+                <%= image_tag "entrepreneurial_spark.png", alt: "Entrepreneurial Spark" %>
+              </a>
+            </p> -->
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <!--end of main container-->
+    <!-- Base template -->
+    <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+    <%= javascript_include_tag "home", "data-turbolinks-track" => true %>
+  </body>
+</html>

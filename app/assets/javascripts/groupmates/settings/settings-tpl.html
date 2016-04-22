@@ -1,0 +1,46 @@
+<div id="north" class="row">
+	<h4><i class="fa fa-gears"></i> Settings</h4>
+</div>
+
+<div ng-app="groupmates.settings">
+	<div class="row">
+		<div class="small-12 medium-6 large-6 columns">
+			
+			<section class="well" ng-show="isCreator">
+					<strong>Project</strong>
+					<form name="projectSettings" ng-submit="updateProject()">
+						<input type="text" maxlength="30" ng-model="project.name">
+						<input type="number" class="displayinline" ng-model="project.duration">
+						<button class="tiny" type="submit">Update Project</button>
+					</form>
+			</section>
+
+			<section ng-controller="ReviewController" class="well" ng-init="rating = star.rating + 1">
+				<h5>Give us your Feedback</h5>
+				<form name="reviewForm" ng-submit="submitReview()">
+					
+					<span style="color:red" ng-show="reviewForm.text.$dirty && review.rating == 0">
+						Please put a rating!<br>
+					</span>
+
+					Rate us: 
+					<div star-rating rating-value="review.rating" max="5" on-rating-selected="rateFunction(rating)"></div>
+
+					<label>Tell us everything. Any suggestions for new things? What could be improved? How do you imagine the final version?</label>
+					<textarea rows="3" type="text" ng-model="review.feedback" name="text" ng-minlength="20" ></textarea>
+
+					<button type="submit" class="tiny" ng-disabled="reviewForm.text.$invalid">Submit Feedback</button>
+
+					<small ng-show="reviewed">Thank you very much! :)</small>
+
+					<span ng-show="reviewForm.text.$invalid">
+						<small>Feedback too short!</small>
+					</span>
+				</form>
+			</section>
+
+			<small>You are using Groupmates v 0.5</small>
+
+		</div>
+	</div>
+</div>

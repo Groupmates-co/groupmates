@@ -1,0 +1,58 @@
+<div id="signin">
+
+<h3 class="text-center">
+	<a href="<%= root_path %>">
+		<%= image_tag 'groupmates_logo_white2.png', size: '50x50' %>
+	</a><br>
+	Welcome Back!
+</h3>
+
+<div class="row" >
+	<div class="small-10 medium-6 large-4 small-centered medium-centered large-centered columns main-block">
+
+		<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+			<div>
+				<%= f.email_field :email, autofocus: true, placeholder: "Email" %>
+			</div>
+			<div>
+				<%= f.password_field :password, autocomplete: "off", placeholder: "Password" %>
+			</div>
+			<ul class="small-block-grid-2">
+				<li>
+					<% if devise_mapping.rememberable? -%>
+						<label for="user_remember_me" class="remember_me">
+						<%= f.check_box :remember_me %> Remember me
+						</label>
+					<% end -%>
+				</li>
+				<li><%= f.submit "Sign in", :class => "button tiny expand" %></li>
+			</ul>
+		<% end -%>
+	</div>
+</div>
+<div class="row">
+	<div class="small-10 medium-6 large-4 small-centered medium-centered large-centered columns extras">
+		<p class="text-center">
+		<span>...or Sign in with</span> <br>
+		<%- if devise_mapping.omniauthable? %>
+			<%- resource_class.omniauth_providers.each do |provider| %>
+				<a class="social-icon <%= provider.to_s %>" href="<%= url_for omniauth_authorize_path(resource_name, provider) %>">
+					<i class="<%= provider_icon(provider.to_s) %>"></i>
+				</a>
+			<% end -%>
+		<% end -%>
+		<br>
+	<%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+	<%= link_to "Forgot your password?", new_password_path(resource_name) %><br>
+	<% end -%>
+	<%#  #if devise_mapping.confirmable? && controller_name != 'confirmations' %>
+	<%# #link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name) %>
+	<%# #end %>
+	<%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+		<span>Don't have account yet? </span><a href="<%= url_for new_registration_path(resource_name) %>">Sign up</a><br>
+	<% end -%>
+	</p>
+	</div>
+</div>
+
+</div>

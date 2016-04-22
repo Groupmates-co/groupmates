@@ -1,0 +1,91 @@
+<% if resource.errors.any? %>
+  <div class="alert-box warning">
+    Errors <br>
+    <ul>
+      <% resource.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div id="profile">
+
+  <h3 class="text-center">
+    Edit Profile
+  </h3>
+
+  <div class="row">
+    <div class="small-10 medium-8 large-6 small-centered medium-centered large-centered columns main-block">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, multipart: true }) do |f| %>
+      <%= devise_error_messages! %>
+
+      <ul class="large-block-grid-3 form-head">
+        <li>
+          <div class="left profile_picture">
+            <label for="user_profile_picture"><%= image_tag current_user.profile_picture, class: 'circle', id: 'picture' %></label>
+            <input class="hide" onchange="readURL(this);" type="file" onchange='readURL(this);' name="user[profile_picture]" id="user_profile_picture">
+          </div>
+        </li>
+        <li>
+          <%= f.label :first_name %>
+          <%= f.text_field :first_name, autofocus: true %>
+        </li>
+        <li>
+          <%= f.label :last_name %>
+          <%= f.text_field :last_name %>
+        </li>
+      </ul>
+
+      <%= f.label :email %>
+      <%= f.email_field :email %>
+
+      <%= f.label :skype %>
+      <%= f.text_field :skype %>
+
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+      <% end %>
+
+      <% if !resource.is_oauth %>
+        <small class="right">(leave blank if you don't want to change it)</small> 
+        <%= f.label :password, "New Password" %>
+        <%= f.password_field :password, autocomplete: "off", pattern: ".{8,}", title: "It should contains at least 8 characters" %>
+        
+        <%= f.label :password_confirmation %>
+        <%= f.password_field :password_confirmation, autocomplete: "off", pattern: ".{8,}" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-10 medium-8 large-6 small-centered medium-centered large-centered columns second-block">
+    <% if !resource.is_oauth %> 
+        <small class="right terms">We need your current password to confirm your changes</small>
+      <%= f.label :current_password %>
+    <% end %>
+      <div class="row">
+        <div class="large-8 columns">
+          <% if !resource.is_oauth %> 
+            <%= f.password_field :current_password, autocomplete: "off" %>
+          <% end %>
+        </div>
+        <div class="large-4 columns">
+          <%= f.submit "Update", :class => "button small expand tiny action-button" %>
+        </div>
+      </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-10 medium-8 large-6 small-centered medium-centered large-centered columns extras">
+
+      <p class="text-center">
+        <span>Unhappy?</span>
+          <%= link_to "Cancel my account", registration_path(resource_name), method: :delete, data: { confirm: "All your data will be deleted forever. Are you sure?" } %>
+      </p>
+      <br>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+@import "variables";
+
+.row {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  max-width: 100%;
+}
+
+#west {
+  background: $west-bg;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  padding: 0;
+  position: fixed;
+
+  .logo {
+    text-align: center;
+    padding: 10px 0px 10px 0px;
+    img {
+      width: convert-to-rem(40px);
+    }
+  }
+
+  #userinfo {
+    text-align: center;
+    //padding: 0 0 convert-to-rem(10px) convert-to-rem(30px);
+    img {
+      margin-right: convert-to-rem(10px);
+    }
+  }
+
+  nav ul {
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: convert-to-rem(6px);
+
+      a {
+        color: $west-link-color;
+        font-size: 1em;
+        display: inline-block;
+        width: 100%;
+        padding-left: convert-to-rem(30px);
+
+        i {
+          padding-right: convert-to-rem(15px);
+        }
+      }
+
+        span.notification {
+          background: $groupmates-orange;
+          float: right;
+          border-radius: 50% 50% 50% 0;
+          display: inline-block;
+          width: 22px;
+          height: 22px;
+          text-align: center;
+          line-height: 22px;
+          color: #ffffff;
+          margin: 3px 10px 0 0;
+        }
+
+
+      &.active, &.active:hover {
+        background: $groupmates-blue;
+        a {
+          color: #ffffff;
+        }
+      }
+      &:hover {
+        background: $west-link-hover;
+      }
+    }
+  }
+
+}
+
+@media only screen and (max-width: 40em) {
+  #west {
+    position: relative;
+  }
+}
+
+
+
+
+#search-form {
+
+  text-align: center;
+  padding: 15px 0px;
+  margin-left: -30px;
+
+  &:before{
+    font-family: FontAwesome;
+    content: "";
+    color: #bbb;
+    display: inline;
+    position: relative;
+    right: -30px;
+  }
+
+  #searchbar {
+    display: inline;
+    width: 230px;
+    height: 30px;
+    font-size: 0.8em;
+    margin: 0;
+    border-radius: 30px;
+    padding-left: 25px;
+  }
+}
+
+
+#north {
+  height: 50px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #eee;
+  h4 {
+    margin: 0;
+    padding: 0;
+    a {
+      color: #555;
+      padding-left: 10px;
+      font-size: 0.7em;
+    }
+  }
+}

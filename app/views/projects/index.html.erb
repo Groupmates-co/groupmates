@@ -1,0 +1,119 @@
+<div id="projects">
+
+<div class="alerts">
+	<% content_for :alerts do %>
+			<% flash.each do |name, msg| -%>
+				<div data-alert class="alert-box <%= name %> text-center">
+					<%= msg %>
+					<a href="#" class="close">&times;</a>
+				</div>
+			<% end %>	
+	<% end %>
+	</div>
+
+	<div class="row">
+		<div class="large-12 columns">
+
+			<a class="button success tiny right" href="<%= new_project_path %>">
+				<i class="fa fa-plus"></i> &nbsp; Create a project
+			</a>
+			<h3>My Projects</h3>
+	
+			<% if @projects.each do |project| %>
+				<article class="project">
+					<div class="row">
+						<div class="medium-6 columns">
+							<h4>
+								<%= project.name %>
+								<% if project.new_messages?(current_user) %>
+									<i class="fa fa-circle"></i>
+								<% end %>
+							</h4>
+						</div>
+						<div class="medium-4 columns">
+							<ul class="numbers">
+								<li class="no-wrap hint--bottom hint--rounded" data-hint="<%= pluralize(project.users.count, 'member', 'members') %>">
+									<i class="fa fa-users"></i> <%= project.users.count %>
+								</li>
+								<li class="no-wrap hint--bottom hint--rounded" data-hint="<%= pluralize(project.channels.where(is_private: 0).count, 'public channel', 'public channels') %>">
+									<i class="fa fa-comments"></i> <%= project.channels.where(is_private: 0).count %>
+								</li>
+								<li class="no-wrap hint--bottom hint--rounded" data-hint="<%= pluralize(project.assets.count, 'file', 'files') %>">
+								<i class="fa fa-hdd-o"></i> <%= project.assets.count %>
+								</li>
+								<li class="no-wrap hint--bottom hint--rounded" data-hint="<%= pluralize(project.notes.count, 'note', 'notes') %>">
+									<i class="fa fa-file-text-o"></i> <%= project.notes.count %>
+								</li>
+								<li class="no-wrap hint--bottom hint--rounded" data-hint="<%= pluralize(project.events.count, 'event', 'events') %>">
+									<i class="fa fa-calendar"></i> <%= project.events.count %>
+								</li>
+							</ul>
+						</div>
+						<div class="medium-2 columns text-right">
+							<a class="button secondary expand small" href="<%= project_path(project.id) %>"><i class="fa fa-sign-in"></i> &nbsp; Enter</a>
+						</div>
+					</div>
+				</article>
+			<% end.empty? %>
+				<div class="empty-block text-center">
+					<p>It looks like you don't have projects yet</p>
+					<a href="<%= new_project_path %>"><i class="fa fa-plus"></i> &nbsp; Create a project</a>
+				</div>
+			<% end %>
+
+			<% if !@projects.empty? %>
+				<div class="empty-block text-center">
+					<a href="<%= new_project_path %>"><i class="fa fa-plus"></i> &nbsp; Create a project</a>
+				</div>
+			<% end %>
+
+		<br>
+
+		<% if !@invitations.empty? %>
+
+			<h3>
+				<%= "Invitation".pluralize(@invitations.count) %>
+				<span class="gm-number"><%= @invitations.count %></span> 
+			</h3>
+			<% last_inviter = nil %>
+			<% @invitations.each do |invit| %>
+			<% if last_inviter != invit.invited_by.id %>
+				<p class="statement"><strong><%= invit.invited_by.fullname %></strong> invited you to join the project:</p>
+			<% end %>
+			<section class="invitation">
+			<div class="row">
+				<div class="large-6 columns">
+					<h4><%= invit.project.name %></h4>
+				</div>
+				<div class="large-3 columns">
+					<em>Invited on 23rd June 2015</em>
+				</div>
+				<div class="large-3 columns text-right">
+					<% if invit.status == Invitation::NOT_APPROVED_JOINED %>
+						<a class="button expand success"><i class="fa fa-check"></i> Joined</a>
+						<em>Waiting for approval</em>
+					<% else %>
+						<a class="button secondary tiny" href="<%= project_join_path(invit.project.id) %>"><i class="fa fa-sign-in"></i> Join the project</a>
+						<!-- <a href="">Decline</a> -->
+						<% last_inviter = invit.invited_by.id %>
+					<% end %>
+				</div>
+			</div>
+			</section>
+			<% end %>
+		<% end %>
+
+		<br>
+
+		<footer>
+			<p>
+				<i class="fa fa-question-circle"></i> For any request, bug reporting or suggestion, <a href="<%= url_for contact_path %>">send us a message</a><br>
+				<small>You are using Groupmates v 0.5</small>
+			</p>
+
+		</footer>
+
+		</div>
+	</div>
+
+</div>

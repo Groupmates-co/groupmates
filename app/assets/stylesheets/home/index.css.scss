@@ -1,0 +1,367 @@
+// Place all the styles related to the Homepage here.
+
+@import "groupmates/variables",
+        "groupmates/tooltip";
+
+.top-bar-section {
+  padding:0;
+}
+
+.well {
+  background: #eee;
+  padding: 10px;
+}
+
+@-webkit-keyframes pulse_animation {
+  0% { -webkit-transform: scale(1); }
+  30% { -webkit-transform: scale(1); }
+  40% { -webkit-transform: scale(1.08); }
+  50% { -webkit-transform: scale(1); }
+  60% { -webkit-transform: scale(1); }
+  70% { -webkit-transform: scale(1.05); }
+  80% { -webkit-transform: scale(1); }
+  100% { -webkit-transform: scale(1); }
+}
+
+#home {
+  .overlay {
+    //position: absolute;
+    //background: rgba(0,0,0,0.6);
+    //width: 100%;
+    //height: 100%;
+  }
+
+  background: $groupmates-blue;
+  //height: 100vh;
+
+    // background: image-url('collaboration_tool.jpeg') no-repeat center center;
+    // -webkit-background-size: cover;
+    // -moz-background-size: cover;
+    // -o-background-size: cover;
+    // background-size: cover;
+
+  .strapline {
+    //padding-top: 30vh;
+    text-align: center;
+    font-family: 'Source Sans Pro', sans-serif;
+    h1 {
+      font-family: 'Source Sans Pro', sans-serif;
+      color: #fff;
+      font-weight: 300;
+      text-shadow: 2px 2px 2px #333;
+      font-size: 3em;
+      margin-bottom: 0;
+    }
+    h3 {
+      color: #fff;
+      font-size: 1.5em;
+      //font-family: "Lato", "Open Sans";
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 200;
+      text-shadow: 2px 2px 2px #333;
+    }
+
+    a.button {
+      border-radius: 30px;
+      margin-right: 10px;
+      border: 1px solid #fff;
+      padding: 6px 12px;
+      margin-bottom: 5px;
+    }
+
+    img {
+      
+    }
+    // #subscribe_button {
+    //   //background: none;
+    //   background: #F5A120;
+    //   border: 1px solid #fff;
+    //   margin: 1em;
+    //   border-radius: 30px;
+    //   font-weight: bold;
+    //   font-size: 0.95em;
+    //   padding: 0.95rem;
+    //
+    //   &:hover {
+    //     -webkit-animation-name: 'pulse_animation';
+    //     -webkit-animation-duration: 5000ms;
+    //     -webkit-transform-origin:70% 70%;
+    //     -webkit-animation-iteration-count: infinite;
+    //     -webkit-animation-timing-function: linear;
+    //   }
+    // }
+    // .readmore {
+    //   text-align: center;
+    //   margin-top: 12vh;
+    //
+    //   a {
+    //     color: #fff;
+    //     i {
+    //       font-size: 1.5em;
+    //       font-weight: bold;
+    //     }
+    //   }
+    // }
+  }
+}
+
+#subscribe, #testimonials {
+  background-color: #1079bf;
+  color: #fff;
+  padding: 30px;
+  h2 {
+    color: #fff;
+    text-align: center;
+    font-weight: 300;
+  }
+  img {
+    width: 15vh;
+    display: inline-block;
+    margin: 10px 20px;
+    border: 1px solid #ddd;
+  }
+  blockquote {
+    font-size: 1.4em;
+    font-weight: 300;
+    color: #fff;
+    border: 0;
+    cite {
+      font-size: 0.8em;
+      color: #f5A120;
+    }
+  }
+  strong {
+    font-size: 1.2em;
+    text-align: center;
+    font-weight: bold;
+    padding-right: 20px;
+  }
+}
+
+#benefits {
+  h3 {
+    text-align: center;
+    font-weight: 300;
+  }
+
+  h4 {
+    font-weight: 400;
+    i {
+      color: #1079BF;
+      padding: 5px;
+    }
+  }
+  strong {
+    color: #777;
+  }
+  p {
+    font-weight: 200;
+  }
+}
+
+#concept, #testimonials, #benefits, #subscribe, #details {
+  padding: 30px 0px;
+}
+
+#details {
+  text-align: center;
+
+  h2 {
+    font-weight: 200;
+  }
+
+  h3 {
+    margin: 15px;
+    font-weight: 300;
+    i {
+      color: #888;
+    }
+  }
+  .separator {
+    border-right: 1px solid #ddd;
+  }
+  img {
+    width: 40vh;
+    margin: 15px;
+  }
+}
+
+
+#concept {
+  clear: both;
+  .description {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 200;
+    text-align: center;
+  }
+  #reasons {
+    margin: auto;
+    font-family: 'Source Sans Pro', sans-serif;
+    .number {
+      text-align: right;
+      line-height: 0.5;
+      font-size: 12em;
+      height: 28vh;
+    }
+    #reasons_line1 {
+      text-transform: uppercase;
+      color: #000;
+      font-weight: bold;
+      letter-spacing: 3px;
+      line-height: 1.1;
+      font-size: 1.5rem;
+    }
+    #reasons_line2 {
+      font-weight: 200;
+      line-height: 2.1;
+      font-size: 1.5rem;
+    }
+    img {
+      margin: 0;
+      width: 30vh;
+    }
+  }
+  article {
+    padding-bottom: 10vh;
+    h2 {
+      font-weight: 300;
+      color: #1079BF;
+    }
+    h4 {
+      font-weight: 300;
+    }
+    img {
+      margin: 20px 0px;
+    }
+    p {
+      font-weight: 300;
+    }
+    strong {
+      color: #f5A120;
+    }
+  }
+}
+
+/***** FOOTER *****/
+
+#footer {
+  background: #222;
+  padding: 20px 0px 50px 0px;
+  nav {
+    padding: 15px 0px 30px 0px;
+    ul li {
+      font-size: 0.8em;
+      border-left: 1px solid #666;
+      &:first-child {
+        border: 0;
+      }
+    }
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    li {
+      padding: 0px 20px;
+      display: inline;
+      a {
+        color: #fff;
+        font-weight: bold;
+        &:hover {
+          color: #1079bf;
+        }
+      }
+    }
+  }
+
+  .espark {
+    font-size: 0.8em;
+    color: #fff;
+  }
+
+  small a {
+    color: #f5a120;
+  }
+
+
+  h6 {
+    color: #575757;
+    margin: 10px 0px 0px 0px;
+    font-size: 14px;
+    a {
+      color: #575757;
+    }
+  }
+}
+
+
+#team {
+  h2 {
+    margin: 0;
+    padding: 0;
+  }
+  p {
+    text-align: justify;
+    margin-bottom: 1rem;
+  }
+  blockquote {
+    padding-top: 0;
+  }
+  ul {
+    margin: 0;
+    li {
+      list-style-type: none;
+      font-size: 2.2em;
+      padding: 0px 0px;
+      margin: 0;
+    }
+  }
+  span {
+    font-size: 0.6em;
+  }
+
+  .circle-gm {
+  border-radius: 50% 50% 0% 50%;
+  }
+  .placeholder {
+    background: #efefef;
+    display: inline-block;
+    width: 100%;
+    height: 220px;
+    border-radius: 50% 50% 50% 0%;
+  }
+}
+
+#education, #business {
+  font-family: 'Source Sans Pro', sans-serif;
+  h1 {
+    font-weight: 300;
+  }
+
+  p {
+    font-weight: 300;
+    font-size: 1.05em;
+  }
+  h2 {
+    font-weight: 300;
+    color: #1079BF;
+  }
+  h4 {
+    font-weight: 300;
+  }
+  img {
+    margin-top: 10vh;
+  }
+}
+#business {
+  img {
+    margin-top: 0;
+  }
+}
+
+#features {
+  h4 {
+    color: #1079bf;
+    margin-top: 5vh;
+    font-weight: 300;
+  }
+}

@@ -1,0 +1,26 @@
+/*
+ *= require_self
+ *= require groupmates/messenger.css
+ *= require groupmates/files.css
+ *= require groupmates/calendar.css
+ *= require groupmates/notes.css
+ *= require groupmates/mates.css
+ *= require groupmates/notifications.css
+ *= require groupmates/settings.css
+ *= require textAngular/src/textAngular.css
+ *= require foundation-datepicker/stylesheets/foundation-datepicker.css
+ *= require jquery-timepicker-jt/jquery.timepicker.css
+ *= require ngDialog/css/ngDialog.min.css
+ *= require ngDialog/css/ngDialog-theme-default.css
+ */
+
+@import "foundation/settings";
+
+@import "groupmates/reset",
+  "groupmates/variables",
+  "groupmates/utils",
+  "groupmates/navigation",
+  "groupmates/timeline",
+  "groupmates/tooltip",
+  "groupmates/loader",
+  "groupmates/switch";

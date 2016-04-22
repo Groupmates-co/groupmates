@@ -1,0 +1,83 @@
+<section id="thankyou">
+	<div class="row">
+		<div class="small-12 medium-6 large-5 columns">
+			<%= image_tag "husky.png" %>
+		</div>
+
+	<div class="small-12 medium-6 large-7 columns">
+		<h5>Thanks for signing up! You will receive an invitation soon. It takes more than one to form a group...</h5>
+		<h3>Invite Friends &amp; Earn Gifts</h3>
+		<p>Share your unique link via email, Facebook or Twitter and earn <strong>Amazon Gift Cards</strong> and <strong>early access</strong> to upcoming Groupmates for Android.</p>
+		<!-- <%= image_tag "amazon.png", width: 150 %> http://yourshot.nationalgeographic.com/photos/4187516/ -->
+		<input id="uniquelink" size="32" type="text" value='<%= @uniquelink %>'>
+
+		<% text = "Hey folks, I just signed up to Groupmates, join me! "%>
+
+		<ul>
+			<li><a href="#" data-reveal-id="emailModal"><i class="fa fa fa-envelope-square"></i></a></li>
+			<li>
+				<a onclick="popup(this.href); return false;" href="http://www.facebook.com/share.php?u=<%= @uniquelink %>&title=<%= text %>">
+				<i class="fa fa-facebook-square facebook"></i>
+				</a>
+			</li>
+			<li>
+				<a onclick="popup(this.href); return false;" href="https://twitter.com/share?text=<%= text %>&url=<%= @uniquelink %>">
+					<i class="fa fa-twitter-square twitter"></i>
+				</a>
+			</li>
+			<li>
+				<a onclick="popup(this.href); return false;" href="https://plus.google.com/share?url=<%= @uniquelink %>">
+					<i class="fa fa-google-plus-square google"></i>
+				</a>
+			</li>
+			<li>
+				<a onclick="popup(this.href); return false;" href="http://www.linkedin.com/shareArticle?mini=true&url=<%= @uniquelink %>&title=<%= text %>&source=<%= @uniquelink %>">
+					<i class="fa fa-linkedin-square linkedin"></i>
+				</a>
+			</li>
+		</ul>
+
+		<!-- Reveal Modals begin -->
+		<div id="emailModal" class="reveal-modal" data-reveal>
+		  <h2>Share by email</h2>
+		  <p> Ruby ajax form here> with From (text), To (email), Content (textarea), send button (which close the modal)</p>
+		  <a class="close-reveal-modal">&#215;</a>
+		</div>
+
+		<br>
+		<p>Here is how it works: </p>
+	</div>
+
+	</div>
+</section>
+
+<section id="gifts">
+	<div class="row friends">
+		<% # 42% = 5 friends; 59% = 10 friends; 77% = 25 friends; 94% = 50; %>
+		<div class="small-4 medium-4 large-4 columns legend"><i class="fa fa-users"></i> Friends joined</div>
+		<div class="small-2 medium-2 large-2 columns"><span class="number <%= hlprize(@referrees,5)%>">5</span></div>
+		<div class="small-2 medium-2 large-2 columns"><span class="number <%= hlprize(@referrees,10)%>">10</span></div>
+		<div class="small-2 medium-2 large-2 columns"><span class="number <%= hlprize(@referrees,25)%>">25</span></div>
+		<div class="small-2 medium-2 large-2 columns"><span class="number <%= hlprize(@referrees,50)%>">50</span></div>
+	</div>
+	<div class="row">
+		<div class="large-12 columns">
+			<div class="progress primary round">
+  			<span class="meter" style="width: <%= @progress %>%"></span>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-4 medium-4 large-4 columns legend"><i class="fa fa-gift gift"></i> Groupmates' Gifts</div>
+		<div class="small-2 medium-2 large-2 columns prize"><i class="fa fa-android android"></i> Android early access</div>
+		<div class="small-2 medium-2 large-2 columns prize"><i class="fa fa-ticket amazon"></i> Amazon £5 Gift Card</div>
+		<div class="small-2 medium-2 large-2 columns prize"><i class="fa fa-ticket amazon"></i> Amazon £15 Gift Card</div>
+		<div class="small-2 medium-2 large-2 columns prize"><i class="fa fa-ticket amazon"></i> Amazon £25 Gift Card</div>
+	</div>
+	<hr>
+	<p class="text-center">
+		You have <strong><%= pluralize(@referrees, 'friend', 'friends') %></strong> who joined. Over 50 friends, Groupmates Team invites you for dinner<br>
+		<i class="fa fa-angellist"></i> <em>Sharing is caring</em>
+	</p>
+	
+</section>

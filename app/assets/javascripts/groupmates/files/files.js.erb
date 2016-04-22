@@ -1,0 +1,278 @@
+(function() {
+'use strict';
+
+angular
+	.module("groupmates.files",['angularFileUpload', 'ngDialog', 'groupmates.files.services','groupmates.directives'])
+		.controller("FilesController", FilesController)
+		.controller("UploadController", UploadController);
+
+	FilesController.$inject = ['$scope','$sce' ,'$rootScope','$timeout','ngDialog','Files','Folders','Project', 'FoldersData'];
+	UploadController.$inject = ['$scope','$rootScope', 'Upload', '$timeout', 'Project'];
+
+	function FilesController($scope, $sce, $rootScope,$timeout, ngDialog, Files, Folders, Project, FoldersData) {
+
+		$scope.getTimes = function(file){
+			var arr = new Array();
+			for (var i=1; i <= file.version; i++) {
+            	arr.push(i);
+        	}
+        	return arr;
+		}
+
+		$scope.files = Files.getData();
+		$scope.folders = FoldersData.query();
+
+		if ($rootScope.breadcrumbs){
+			var index = $rootScope.breadcrumbs.length -1;
+			var folderId = $rootScope.breadcrumbs[index].id;
+			if (folderId != 0){
+				FoldersData.get({ folderId: $rootScope.breadcrumbs[index].id}, function(data) {
+					$scope.openFolder(data);
+				});
+			}
+		}
+
+		$scope.parentFolder = null;
+
+		$scope.predicate = 'name';
+		$scope.selectedFile = null;
+
+		$scope.$on('unselectFile', function(event, mass) {
+			$scope.selectedFile = null;
+		});
+
+		var recentlyEdited = false;
+
+		function setRecentlyEdited() {
+			recentlyEdited = true;
+			$timeout(function() {
+				recentlyEdited = false;
+			}, 10);
+		}
+
+		$scope.getOldVersion = function(file, version){
+			Files.get(file.id, version, function(data) {
+				$scope.setPreview(data);
+			});
+		}
+
+		$scope.downloadOldVersion = function(file, version){
+			Files.get(file.id, version, function(data){
+				$scope.download(data);
+			});
+		}
+
+		$scope.selectFile = function(file){
+			if ($scope.selectedFile && $scope.selectedFile != file){
+				$scope.stopEditingName($scope.selectedFile);
+			}
+			$scope.selectedFile = file;
+		};
+
+		$scope.addNewFolder = function(){
+			Folders.newFolder();
+		};
+
+		$scope.editName = function(file){
+			$scope.stopEditingAll();
+			file.editing = true;
+			file.tempName = file.name;
+			setRecentlyEdited();
+		};
+
+		$scope.move = function(file){
+			if (file.editing == true)
+				return;
+			$scope.movedFile = file;
+		}
+
+		$scope.dropFile = function(destination) {
+			if (destination.uploaded_content_type == "folder" && $scope.movedFile != destination){
+				$scope.movedFile.parent_id =  (destination.id == null ? 0 : destination.id );
+				Files.update($scope.movedFile);
+
+				Files.rejectAsset($scope.movedFile);
+				$scope.files = Files.getData(); //Refresh
+			}
+		}
+
+		$scope.stopEditingName = function(file){
+			if (file.editing && !recentlyEdited){
+				file.editing = false;
+				file.name = file.tempName;
+			}
+		}
+
+		$scope.supress = function($event){
+			$event.stopPropagation();
+		}
+
+		$scope.stopEditingAll = function() {
+			if (!recentlyEdited){
+				_.find($scope.files, function(el){
+					$scope.stopEditingName(el);
+				});
+			}
+		}
+
+		$scope.rename = function(file){
+			file.editing = false;
+			if (file.name == ""){
+				file.name = file.tempName;
+				return false;
+			}
+			if (file.uploaded_content_type == "folder"){
+				FoldersData.update({
+					'folderId' : file.id,
+					'folder' : file
+				});
+			} else if (file.tempName != file.name) {
+				Files.rename(file, function(data) {
+			  		$scope.$emit('newFileUploaded', data);
+				});				
+			}
+			//Broadcast event rename to other views here
+		}
+
+		$scope.openFolder = function(folder){
+			var crumb = {'id': folder.id, 'name': folder.name};
+			var index = _.indexOf($rootScope.breadcrumbs, _.find($rootScope.breadcrumbs, function(bc) {
+				return bc.id == crumb.id;
+			}));
+			if (folder.id == undefined){ //root
+				$rootScope.breadcrumbs.splice(1, $rootScope.breadcrumbs.length);
+			} else if (index != -1) {
+				$rootScope.breadcrumbs.splice(index+1, $rootScope.breadcrumbs.length);
+			} else {
+				$rootScope.breadcrumbs.push(crumb);
+			}
+
+			Files.getFilesFolder(folder.id);
+			if (folder.id != 0 && folder.id != undefined){
+				$scope.parentFolder = {};
+				$scope.parentFolder.uploaded_content_type = "folder";
+				$scope.parentFolder.id = (folder.parent_id ? folder.parent_id : null);
+			} else {
+				$scope.parentFolder = null;
+			}
+			$scope.files = Files.getData(); //Refresh
+		};
+
+		$scope.getOldVersions = function(file){
+			$scope.latestFile = file;
+			Files.getVersions(file, function(data) {
+				$scope.oldFiles = data;
+			});
+			
+			var dialog = ngDialog.open({
+				template: '<%= asset_path("groupmates/files/file-versions-tpl.html") %>',
+				appendTo: "#table-dialog",
+				scope: $scope
+			});
+			$scope.predicate2 = 'version';
+		};
+
+		$scope.deleteFile = function(){
+			$scope.deletedFile = $scope.selectedFile;
+			var dialog = ngDialog.open({
+				template: "file-delete-tpl",
+				scope: $scope
+			});
+
+			dialog.closePromise.then(function (data) {
+				if (data.value == true){
+					if ($scope.deletedFile.uploaded_content_type == "folder"){
+						Folders.deleteFolder($scope.deletedFile);
+					} else {
+						Files.deleteFile($scope.deletedFile);
+					}
+					$scope.files = Files.getData(); //Refresh
+				}
+			});
+		};
+
+		$scope.setPreview = function(file){
+			var type = file.uploaded_content_type;
+			$scope.previewType = type;
+			$scope.previewPath = $sce.trustAsResourceUrl(file.url);
+			$('#previewBox').empty().append("	<object  id='preview' type='" + type + "' class='preview' data='" + $scope.previewPath + "' ng-click='clearPreview()'' > </object>");
+			if (isText(type) || isVideo(type))
+				$("#preview").addClass("full");
+		};
+
+		$scope.clearPreview = function() {
+			$scope.previewType = null;
+			$scope.previewPath = null;
+			$('#previewBox').empty();
+		}
+
+		$scope.canBePreviewed = function(type){
+			if (type == null) { return false;}
+			return ( isText(type) || isImage(type) || isAudio(type) || isVideo(type) );
+		};
+
+		var isAudio = function(type) {
+			return ( type.indexOf("audio/") != -1 );
+		};
+
+		var isText = function(type) {
+			return ( type == "application/pdf" || type == "text/plain");
+		};
+
+		var isVideo = function(type) {
+			return (type.indexOf("video/") != -1);
+		};
+
+		var isImage = function(type) {
+			return ( type.indexOf("image/") != -1 );
+		};
+
+		$scope.download = function(file) {
+			var link = document.createElement("a");
+			link.download = file.name;
+			link.href = file.url;
+			link.click();
+		}
+
+		$scope.$on('newFileUploaded', function(event, data) {
+			if (data.version != 1){
+				$scope.files = _.reject($scope.files, function(file) {
+					return (file.id == data.id && file.uploaded_content_type != "folder");
+				});
+			}
+			$timeout(function() {
+				$scope.$apply(function(){
+					$scope.files.push(data);
+				});
+			});
+		});
+	}
+
+	function UploadController($scope,$rootScope,Upload,$timeout,Project) {
+
+		$scope.abort = function() {
+			Upload.abort();
+		};
+
+		$scope.unselectFile = function(e){
+			if(e.target.nodeName !== 'TD')
+				$rootScope.$broadcast('unselectFile', [1,2,3]);
+		}
+
+		$scope.onFileSelect = function($files) {
+			$scope.errors = null;
+			if ($files.length == 0){ return; }
+			Upload.upload($files,
+			function(data){
+			  $scope.$emit('newFileUploaded', data);
+				$timeout(function(){
+					$rootScope.progress = 0;
+				}, 3500);
+			},
+			function(err){
+				$scope.errors = err;
+			});
+		};
+	}
+
+})();

@@ -1,0 +1,284 @@
+/* Contains all the CSS related to users actions
+ *	Sign in, Sign up, Reseting ...
+ *
+ *= require foundation-datepicker/stylesheets/foundation-datepicker
+ *= require_self
+ */
+
+@import "groupmates/variables", 
+        "groupmates/tooltip";
+
+body {
+	background: $groupmates-blue;
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
+#navigation {
+	.dropdown {
+		li a {
+			&:hover {
+				background: #EEE;
+			}
+		}
+	}
+}
+
+.main-block {
+	padding: 1rem 1rem 0 1rem;
+	font-family: 'Source Sans Pro', sans-serif;
+	background: #FFF;
+}
+
+.second-block {
+	background: #eee;
+	padding: 0.5rem 1rem;
+}
+
+.alert-box {
+	font-size: 1em;
+}
+
+#signup, #reset, #profile {
+	.action-button {
+		margin: 0;	
+	}	
+	.reset-button, .action-button {
+		font-size: 0.8em;
+		font-weight: 600;
+	}
+	.terms {
+		font-size: 0.7em;
+	}
+}
+
+#signin, #signup, #reset, #setpassword, #profile {
+	padding-top: 15vh;
+	& > h3 {
+		color: #FFF;
+		font-weight: 300;
+		img {
+			opacity: 0.6;
+		}
+	}
+
+	.small-block-grid-2, .small-block-grid-1 {
+		li {
+			padding-bottom: 0;
+	}
+
+	input[type=submit] {
+		font-size: 0.8em;
+		font-weight: 600;
+		padding-top: 0.6rem;
+		padding-bottom: 0.6rem;
+	}
+
+	.remember_me {
+			input[type=checkbox] {
+				margin-right: 0.5rem;
+				margin-left: 0.3rem;
+			}
+			line-height: 2.5;
+		}
+	}
+}
+
+#signin, #signup, #reset, #setpassword, #profile, #new-project {
+	.extras {
+		color: #FFF;
+		span {
+			font-weight: 300;
+		}
+		a {
+			color: #fff;
+			font-weight: 500;
+
+			&:hover {
+				color: $groupmates-orange;
+			}
+		}
+		p {
+			margin-top: 0.5rem;
+			margin-bottom: 0;
+		}
+		.social-icon {
+			font-size: 2em;
+			margin: 0px 10px;
+		}
+	}
+}
+
+#profile {
+	padding-top: 7vh;
+	.main-block {
+		padding-bottom: 0.5rem;
+	}
+	.form-head {
+		li {
+			padding-bottom: 0;
+		}
+	}
+	.profile_picture {
+		margin-top: -50px;
+		text-align: center;
+		img {
+			border: 1px solid #fff;
+			width: 120px;
+			height: 120px;
+		}
+	}
+}
+
+/* Index project */
+
+#projects {
+
+	.alerts {
+		min-height: 55px;
+		margin-bottom: 0.5rem;
+		.alert-box {
+			margin: 0;
+		}
+	}
+
+  .empty-block {
+  	color: #FFF;
+    border: 2px dashed #eee;
+    padding: 0.7rem;
+    a {
+    	color: #FFF;
+    }
+  }
+
+  .gm-number {
+    display: inline-block;
+    margin-left: 0.5rem;
+    text-align: center;
+    font-size: 0.8em;
+    width: 27px;
+    height: 27px;
+    background: #f5A120;
+    color: #fff;
+    border-radius: 50% 50% 50% 0%;
+  }
+
+  .statement {
+  	color: #FFF;
+  	margin-bottom: 0.5rem;
+  }
+
+  .invitation, .project {
+    margin: 1rem 0;
+    padding: 0.5rem 0.5rem 0.5rem 1.2rem ;
+    border: 1px solid #ddd;
+    > p {
+      margin: 0;
+    }
+    h4 {
+    	color: #333;
+    	margin: 0;
+    	padding: 0;
+      line-height: 1.5;
+    }
+  }
+  .invitation {
+  	margin-top: 0rem;
+  	background: #FFF;
+  	.button {
+  		margin-bottom: 0;
+  	}
+  	em {
+  		vertical-align: bottom;
+  		line-height: 2;
+  		color: #999;
+  	}
+  }
+
+  footer {
+  	text-align: center;
+		color:#FFF;
+		font-size: 1.5em; 
+		margin-right: 10px;
+		font-weight: 200;
+		font-family: 'Source Sans Pro', sans-serif;
+		a {
+			color: #FFF;
+			font-weight: bold;
+		}
+  }
+
+  .project {
+    background: #FFF;
+    .button {
+    	margin-bottom: 0;
+    }
+    .numbers {
+      margin: 0;
+      padding: 0;
+      li {
+        display: inline;
+        padding: 0px 0.5rem; 
+        color: #666;
+        font-size: 1.3em;
+        i {
+        	color: #999;
+        }
+      }
+    }
+  }
+}
+
+#projects, #new-project {
+	h4, h3 {
+		color: #FFF;
+		font-weight: 300;
+	}
+
+  article.project {
+    div.medium-6 {
+      margin-top: 6px;
+    }
+
+    div.medium-4 {
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .fa-circle {
+      color: #ffa500;
+      font-size: 10px;
+    }
+  }
+
+  .no-wrap {
+    white-space: nowrap;
+  }
+}
+
+input.member-email {
+	margin-top: 0.5rem;
+	margin-bottom: 0;
+}
+
+#new-project {
+	margin-top: 7vh;
+	.main-block {
+		ul {
+			margin: 0 0.5rem;
+		}
+		p{
+			margin-bottom: 0.5rem;
+		}
+
+		#name-available {
+
+			&.available {
+				color: #43AC6A;
+			}
+			&.unavailable {
+				color: #f04124;
+			}
+		}
+
+	}
+}

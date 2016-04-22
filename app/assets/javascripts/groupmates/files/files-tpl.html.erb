@@ -1,0 +1,146 @@
+<div ng-app="groupmates.files" ng-controller="UploadController" ng-click="unselectFile($event)">
+
+<script type="text/ng-template" id="file-delete-tpl">
+	<p>Are you sure you want to delete <b> {{deletedFile.name}} </b> ?</p>
+	<button ng-click="closeThisDialog(true)">Yes</button><button ng-click="closeThisDialog(false)">No</button>
+</script>
+
+<div id="previewBox" ng-show="previewPath != null" class="back" ng-click="clearPreview()">
+</div>
+
+
+<table id="ghost"></table>
+
+<div id="table-dialog"></div>
+
+<div id="north" class="row file-title">
+
+	<div ng-show="breadcrumbs.length <= 1">
+		<h4><i class="fa fa-hdd-o"></i> Files</h4> 
+		<p ng-file-select="onFileSelect($files)">Drag & drop files <i class="fa fa-hand-o-down"></i> or click here to upload</p>
+	</div>
+
+	<h4 ng-show="breadcrumbs.length > 1"><i class="fa fa-hdd-o"></i> </h4>
+	<nav role="menubar" aria-label="breadcrumbs" ng-if="breadcrumbs.length > 1" id="filepath" class="breadcrumbs">
+		<li role="menuitem" ng-repeat="crumb in breadcrumbs" ng-class="{first: ($index == 0), current: $last}">
+			<a ng-click="openFolder(crumb)">{{ crumb.name }}</a>
+		</li>
+	</nav>
+
+</div>
+
+<div class="errors" ng-show="errors != null">
+	<strong>There were some errors with your file:</strong>
+	<ul>
+	<div  ng-repeat="error in errors.uploaded">
+		<li>{{error}}</li>
+	</div>
+</div>
+
+<div id="filexplorer" ng-file-drop="onFileSelect($files)" drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ng-multiple="false" droppable ng-click="stopEditingAll()">
+	<div class="row">
+		<div class="small-12 medium-12 large-12 columns">
+			<div id="progress-upload" class="row" ng-hide="$root.progress == 0">
+				<div class="large-5 columns fileinfo">
+					<span><i class="fa {{$root.uploadedFile.type | getFileTypeIcon: 'icon'}} "></i></span>
+					<ul>
+						<li>{{$root.uploadedFile.name}}</li>
+						<li>Size: {{$root.uploadedFile.size/1000}} kB</li>
+						<!-- <li>Type: </li> -->
+					</ul>
+				</div>
+				<div class="large-7 columns uploadinfo">
+					<div class="progress primary round large-10" ng-class="{success: $root.progress == 100}">
+						<span class="meter" style="width: {{$root.progress}}%"></span>
+					</div>
+					<div class="abort-button large-1" ng-click="abort()" ng-show="$root.progress < 100 && $root.progress != 0"> <i class="fa fa-times"></i> 
+					</div>
+				</div>
+			</div>
+
+			<nav id="filetoolbar" ng-show="$root.progress == 0">
+				<p class="right"><a href=""><i class="fa fa-question-circle"></i></a></p>
+				<ul>
+					<li ng-show="selectedFile != null && selectedFile.uploaded_content_type != 'folder' "><a ng-click="download(selectedFile)"><i class="fa fa-download"></i> Download</a></li> 
+					<li ng-show="selectedFile != null" ng-click="editName(selectedFile)"><a><i class="fa fa-pencil-square-o"></i> Rename</a></li>
+					<li ng-show="selectedFile != null"><a ng-click="deleteFile()"><i class="fa fa-trash"></i> Delete</a></li>
+					<li ng-show="selectedFile != null"><a href=""><i class="fa fa-share-alt"></i> Share</a></li>
+					<li><div class="uploadbtn" ng-file-select="onFileSelect($files)"><i class="fa fa-upload"></i> Upload</a></div></li>
+					<li><a ng-click="addNewFolder()"><i class="fa fa-folder"></i> New folder</a></li>
+					<li ng-show="selectedFile != null && selectedFile.version > 1" ><a href="" ng-click="getOldVersions(selectedFile)"><i class="fa fa-history"></i> Versions</a></li>
+				</ul>
+			</nav>
+
+			<article>
+				<div class="scrollbox">
+					<table>
+						<thead>
+							<tr>
+								<th><a href="" ng-click="predicate = 'name'; reverse=!reverse">Name</a>
+									<i ng-show="predicate == 'name'" sorter> </i>
+								</th>
+								<th><a href="" ng-click="predicate = 'uploaded_content_type' ; reverse=!reverse">Type</a>
+									<i ng-show="predicate == 'uploaded_content_type'" sorter> </i>
+								</th>
+								<th><a href="" ng-click="predicate = 'uploaded_file_size';reverse=!reverse">Size</a>
+									<i ng-show="predicate == 'uploaded_file_size'" sorter> </i>
+								</th>
+								<th><a href="" ng-click="predicate = 'created_at'; reverse=!reverse">Created at</a>
+									<i ng-show="predicate == 'created_at'" sorter> </i>
+								</th>
+								<th><a href="" ng-click="predicate = 'user_id'; reverse=!reverse">Author</a>
+									<i ng-show="predicate == 'user_id'" sorter > </i>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-show="parentFolder != null">
+								<td   droppable drop="dropFile(parentFolder)">
+								<i class="fa fa-level-up"></i>
+								<a ng-click="openFolder(parentFolder)">Parent Folder</a>
+								<td>Folder</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								</td>
+							</tr>
+							<tr ng-repeat="f in files | orderBy:predicate:reverse" ng-class="{active: f == selectedFile}" ng-click="selectFile(f)" ng-dblclick="editName(f)" draggable drag="move(f)" >
+								<td droppable drop="dropFile(f)">
+								<i class="fa {{ f.uploaded_content_type | getFileTypeIcon: 'icon' }}"></i>  
+								<span class="inline-edit" ng-show="f.editing">
+									<form ng-submit="rename(f)" >
+										<!-- bug here on ng-blur-->
+										<input ng-esc="stopEditingName(f)" ng-click="supress($event)" auto-focus="f.editing" type="text" ng-model="f.name"></input>
+									</form>
+								</span>
+								<span ng-show="f.editing == undefined || !f.editing">
+									<span ng-if="f.uploaded_content_type != 'folder' && !canBePreviewed(f.uploaded_content_type)"><a ng-click="download(f)">{{ f.name }}</a>
+									</span>
+									<span ng-if="f.uploaded_content_type != 'folder' && canBePreviewed(f.uploaded_content_type)">
+										<a  ng-click="setPreview(f)" href="" target="_blank">{{ f.name }}</a>
+									</span>
+									<span ng-if="f.uploaded_content_type != 'folder' " data-tooltip aria-haspopup="true" class="has-tip" title="This is the {{f.version |ordinalize}} version of this file." ng-show="f.version > 1"> (rev.{{f.version}})</span>
+
+									<a ng-if="f.uploaded_content_type == 'folder'" ng-click="openFolder(f)" href="" target="_blank">{{ f.name }}</a>
+								</span>
+								</td>
+								<td>{{ f.uploaded_content_type | getFileTypeIcon: "type" }}</td>
+								<td><span ng-if="f.uploaded_content_type != 'folder'">{{ f.uploaded_file_size/1000 | number:0 }} kB</span></td>
+								<td>{{ f.created_at | getRelativeDate }}</td>
+								<td>
+									<span class="hint--left hint--rounded" data-hint="{{ f.user_id| getUserName: true }}">
+									<img width="25" height="25" class="circle" ng-src="{{ f.user_id | getPictureUrl }}"
+									fallback-src="{{ 1|fallback }}" loading-src> 
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</article>
+			
+		</div>
+	</div>
+</div>
+
+</div>

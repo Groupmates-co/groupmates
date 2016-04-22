@@ -1,0 +1,131 @@
+/* ---- Notes ----- */
+
+.notes-list {
+	margin-top: 5px;
+	.note {
+		padding: 10px;
+		font-size: 0.9em;
+		.title {
+			padding: 0;
+		}
+		.date {
+			padding: 0;
+			text-align: right;
+		}
+		h6 {
+			color: #000;
+			margin-bottom: 0px;
+			margin-top: 0px;
+		}
+		.avatar {
+			margin-right: 10px;
+		}
+		p {
+			display: inline;
+			color: #999;
+			font-size: 0.8em;
+			line-height: 15px;
+			time {
+				color: #555;
+				display: inline;
+			}
+		}
+	}
+}
+.favorites-list {
+	font-size: 0.9em;
+	.item {
+		clear: both;
+		border-bottom: 1px solid #eee;
+		img {
+			margin-right: 10px;
+			margin-top: 7px;
+		}
+		p { 
+			margin-bottom: 12px;
+			font-size: 1em;
+		}
+		time {
+			color: #777;
+			font-size: 0.9em;
+		}
+		em {
+			color: #555;
+		}
+	}
+}
+
+
+
+#note-form {
+	padding-top: 5px;
+	.wordcount {
+		font-size: 0.8em;
+	}
+	#notetitle {
+		border: 0px;
+		box-shadow: 0 0;
+		font-size: 1.1em;
+		color: #000;
+	}
+	#editor {
+		.button-group {
+			margin: 0 0 1rem 0;
+			width: 100%;
+			background: #e7e7e7;
+			button {
+				padding: 0.5rem 1rem;
+				margin-bottom: 0;
+			}
+			.active {
+				background: #1079BF;
+				color: #fff;
+			}
+		}
+		font-size: 0.8em;
+	}
+	label {
+		font-size: 0.8em;
+		display: inline;
+		margin: 0;
+	}
+}
+
+
+.selected{
+	border-color: blue;
+	background: aliceblue;
+}
+
+
+
+.saved {
+	transition: .5s linear all;
+	opacity: 1;
+	color: #33BB33;
+}
+
+.saved.ng-hide{
+    display: block !important;
+    opacity: 0;
+}
+
+.full{
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	z-index: 2;
+	background-color: #fff;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

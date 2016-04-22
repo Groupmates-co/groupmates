@@ -1,0 +1,26 @@
+<div id="reset">
+
+	<h3 class="text-center">
+		<a href="<%= root_path %>"><%= image_tag 'groupmates_logo_white2.png', size: '50x50' %></a><br/>
+		Forgot your password?
+	</h3>
+
+	<div class="row">
+		<div class="small-10 medium-6 large-4 small-centered medium-centered large-centered columns main-block">
+			<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+			<%= devise_error_messages! %>
+			<%= f.email_field :email, autofocus: true, placeholder: "Email" %>
+			<%= f.submit "Send me reset password instructions", class: "button expand tiny reset-button" %>
+			<% end %>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="small-10 medium-6 large-4 small-centered medium-centered large-centered columns extras">
+			<p class="text-center">
+				<%= link_to "Sign in", new_user_session_path %><br>
+				<span>Don't have account yet?</span> <%= link_to "Sign up", new_registration_path(resource_name) %>
+			</p>
+		</div>
+	</div>
+</div>

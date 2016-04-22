@@ -1,0 +1,176 @@
+<div id="north" class="row">	
+
+	<div>
+	
+	<h4 class="left">
+		<img ng-show="$root.currentChat.is_one_to_one" class="circle" ng-src="{{ recipient.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src width="30" height="30" />
+
+		<i ng-hide="$root.currentChat.is_one_to_one" class="fa fa-comment-o"></i> 
+
+		{{ $root.currentChat.name }} 
+	</h4>
+
+	<div ng-hide="{{ $root.currentChat.is_one_to_one }}" class="chatmember hint--bottom hint--rounded" ng-repeat="member in $root.currentChat.users" data-hint="{{ member.first_name + ' ' + member.last_name }}">
+		<img class="circle" ng-class="{'desaturate': ($root.presences.get(member.id) == null)}" ng-src="{{ member.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src width="30" height="30" />
+	</div>
+	<div ng-hide="$root.currentChat.is_main || $root.currentChat.is_one_to_one" class="chatmember">
+		<a class="addmember hint--right hint--rounded" dropdown-toggle="#dropdown-members" data-hint="Add a mate to this discussion">
+			<i class="fa fa-user-plus"></i>
+		</a>
+		<ul id="dropdown-members" class="f-dropdown" >
+			<li ng-repeat="member in $root.members" ng-hide="member.id == currentUser.id" ng-click="addUserToChannel(member, $root.currentChat)">
+				<span ng-class="{'online': ($root.presences.get(member.id) != null)}"></span>
+				<img ng-src="{{ member.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src width="20" height="20"> 
+			  {{ member.first_name+" "+member.last_name }}<br>
+			</li>
+		</ul>
+	</div>
+
+	</div>
+</div>
+
+<div resize-chat ng-app="groupmates.messenger">
+	<div class="row" >
+		<div class="small-9 medium-9 large-9 columns norightgutter">
+			<div scroller id="chatroom" class="scrollbox resizable" scroll-glue >
+				<article ng-repeat="message in messages" ng-bind-html-unsafe="message.content" class="message" ng-show="userInChat($root.currentChat)">
+					<div ng-if=" isOldMessage(messages[$index - 1], message)" class="date-separator">
+						<span>{{message.created_at | getChatDate}}</span>
+					</div>
+					<img class="avatar" ng-src="{{ message.user.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src width="45">	
+					<strong>{{ message.user.fullname }}</strong>
+					<time class="hint--bottom hint--rounded"  data-hint="{{ message.created_at | date:'EEEE dd MMMM' }}" datetime="{{ message.created_at }}">
+						{{ message.created_at | date:'hh:mm a' }}
+					</time>
+
+					<div ng-if="message.id" class="favorite-btn">
+						<i ng-click="toggleFavorite(message.id)" ng-class="{'fa fa-star-o': !isFavorite(message.id),'fa fa-star favorited': isFavorite  }"></i>
+					</div>
+					
+					<div ng-show="message.hasErrors" class="right error"><i title="Error" class="fa fa-circle-thin"></i> Error: {{ message.errortext }}</div> 
+
+					<!-- <div ng-show="$last && isUserMessage(message.user.id)" class="right sent"><i title="Sent" class="fa fa-dot-circle-o"></i></div>  -->
+
+<!-- 					<div ng-show="hasSeen(message)" class="right seenby">
+						Seen by 
+						<span ng-repeat="user in getSeenUsers(message)">
+							- {{ user | getUserName: false }}
+						</span>
+					</div> -->
+					<div class="content" ng-bind-html="trustAsHtml(message.content )">{{ message.content  }}</div>
+
+					<div ng-show="$last" class="right seenby">
+						<div ng-if="$last && hasSeen(message)">
+							Seen by 
+							<span ng-repeat="view in msgViews" ng-if="isOld(message.created_at,view.updated_at)" ng-show="!isOwner(view)">
+							- {{ view.user_id | getUserName: false }}
+							</span>
+					</div>
+				</article>
+				<div ng-show="userInChat($root.currentChat) && $root.typing.length > 0" class="typing">
+						Typing:  
+						<span ng-repeat="user in $root.typing">
+							 	{{ user | getUserName: false }}
+								<div class="spinner">
+								  <div class="bounce1"></div>
+								  <div class="bounce2"></div>
+								  <div class="bounce3"></div>
+								</div>
+						</span>
+				</div>
+				<a id="lastmessage"></a>
+			</div>
+		</div> 
+
+		<div id="channels" class="small-3 medium-3 large-3 columns norightgutter">
+
+					<!--  ______GROUPS_____ -->
+			<div class="resizable scrollbox">
+					<h5><i class="fa fa-comments"></i> Groups</h5>
+					<hr>
+					<ul id="groups">
+						<li ng-repeat="chat in chats" class="chat-item" ng-class="{active: chat.id == $root.currentChat.id}" ng-show="(userInChat(chat) ||!chat.is_private) && !chat.is_one_to_one">
+
+							<a ng-click="changeChat(chat)" ng-hide="chat.editing" ng-class="{info: chat.id == $root.currentChat}">
+								<span ng-show="chat.unread > 0" class="notification">{{chat.unread}}</span>
+								<i ng-hide="chat.unread > 0" class="fa" ng-class="{'fa-cube': chat.is_main, 'fa-comment-o': !chat.is_main}"></i>
+								 &nbsp; {{chat.name}}
+							</a>
+							
+							<input ng-show="chat.editing" ng-blur="stopEditing(chat)" ng-model="chat.name">
+
+							<div ng-show="userInChat(chat) && $index != 0" class="commands right">
+								<i class="fa fa-pencil" ng-click="editName(chat)"></i>
+								<i class="fa fa-user-times" ng-show="userInChat(chat) && $index != 0" ng-click="leaveChat(chat)"></i>
+								<label for="private_{{ $index }}">
+									<i class="fa" ng-class="{'fa-lock': chat.is_private, 'fa-unlock-alt': !chat.is_private}"></i>
+								</label>
+								<input id="private_{{ $index }}" ng-show="userInChat(chat) && $index != 0" type="checkbox" ng-model="chat.is_private" ng-change="togglePrivate(chat)">
+							</div>
+
+							<span ng-show="!userInChat(chat)">
+								<i class="fa fa-user-plus" ng-click="joinChat(chat)"></i>
+							</span>
+						</li>
+						<li class="newchat">
+							<span ng-click="newChannel()" ng-show="!adding"><i class="fa fa-plus"></i> &nbsp; New group</span>
+
+							<div ng-show="adding">
+								<i class="fa fa-comment-o"></i>
+								<input ng-esc="cancelNewChannel()" type="text" placeholder="New group" ng-show="adding" ng-blur="saveNewChannel(1)" ng-enter="saveNewChannel(2)" show-focus="adding" ng-model="newName">
+								<span ng-click="saveNewChannel(3)" class="validate">
+									<i class="fa fa-check validate"></i>
+								</span>
+								&nbsp; 
+								<span ng-click="cancelNewChannel()"><i class="fa fa-times cancel"></i></span>
+							</div>
+						</li>
+					</ul>				
+					<!--  ______MATES_____ -->
+
+					<h5><i class="fa fa-users"></i> Mates</h5>
+					<hr>
+					<ul>
+						<li ng-repeat="member in $root.members" ng-hide="currentUser.id == member.id" ng-click="privateChannel(member)" ng-class="{active: member.id == recipient.id}">
+							<span class="status" ng-class="{'online': ($root.presences.get(member.id) != null)}"></span> &nbsp;
+							<img ng-src="{{ member.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src width="20" height="20" class="circle"> 
+							{{ member.first_name+" "+member.last_name }}<br>
+						</li>
+					</ul>
+			</div>
+</div>
+
+</div><!-- Close .large-9 of groupmates.html -->
+
+	<div id="south">
+	<div class="row" ng-controller="MessageNewController">
+		<div class="small-9 medium-10 large-9 columns norightgutter">
+			<form accept-charset="UTF-8" method="post" class="new_message" data-remote="true" id="new_message">
+				<textarea ng-focus="readMessages()" ng-disabled="!userInChat($root.currentChat)" ng-keydown="startTyping()" ng-keyup="stopTyping()" id="message_content" name="message[content]" ng-model="message.content" placeholder="" ng-enter="postMessage()" ng-file-drop="onFileSelect($files)"></textarea>
+			</form>
+		</div>
+		<div class="small-3 medium-2 large-3 columns">
+			<div ng-file-select="onFileSelect($files)" class="attach-btn">
+				<span ng-if="message.file" class="animate-if">
+					<a class="attach file" class ="hint--top" data-hint= "Name: {{message.file.name}} Size: {{message.file.size/1024|number:0}} Kb"> <i class="fa {{ message.file.type | getFileTypeIcon: 'icon' }}"></i></a>
+				</span>
+				<span ng-if="!message.file" class="animate-if"><a class="attach"><i class="fa fa-paperclip"></i></a></span>
+
+			</div>
+			<a ng-show="message.file !=null" ng-click="removeFile()" class="abort">
+				<i class="fa fa-times"></i>
+			</a>
+			<div ng-file-select="" class="emoticon-btn">
+		  	<a class="emoticon" dropdown-toggle="#dropdown-emoji" ><i class="fa fa-smile-o"></i></a>
+		  </div>
+		  <ul id="dropdown-emoji" class="f-dropdown drop-top">
+		    <li ng-repeat="(label, url) in emojis">
+		      <a ng-click="addEmoji(url)" href="" target="_blank">{{label}}</a>
+		    </li>
+		  </ul>
+			<div ng-show="isTyping" class="right error"><i title="Error" class="fa fa-circle-thin"></i></div>
+			<a class="help right"><i class="fa fa-question-circle"></i></a>
+		</div>
+	</div>
+</div>
+<!-- </div> is in groupmates.html -->

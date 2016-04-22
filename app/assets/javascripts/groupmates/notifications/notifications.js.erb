@@ -1,0 +1,91 @@
+(function() {
+'use strict';
+
+angular
+
+	.module("groupmates.notifications",['ngRoute'])
+
+	.config(['$routeProvider', function ($routeProvider) {
+	  $routeProvider.when('/notifications', {
+	    templateUrl:'<%= asset_path("groupmates/notifications/notifications-tpl.html") %>',
+	    controller:'NotificationsController'
+	  });
+	}])
+
+	/**
+	 * Manage the notifications
+	 */
+	.controller("NotificationsController", NotificationsController);
+
+	NotificationsController.$inject = ['$scope', '$timeout', "Preferences"];
+	function NotificationsController($scope, $timeout, Preferences) {
+		Preferences.setPreferences().then(function(data){
+			$scope.preferences = Preferences.getData();
+			if ($scope.preferences == null) {
+				$scope.preferences = {};
+				$scope.preferences.from_time = 9;
+				$scope.preferences.to_time = 17;
+			}
+			convertToPeriod();
+		});
+
+		$scope.convertTime = function() {
+			if ($scope.full)
+				convertToFull();
+			else
+				convertToPeriod();
+		}
+
+		var convertToPeriod = function() {
+			if ($scope.preferences.from_time <= 12){
+				$scope.preferences.period_from_time = $scope.preferences.from_time;
+				$scope.period_from = 0;
+			} else {
+				$scope.preferences.period_from_time = $scope.preferences.from_time - 12;
+				$scope.period_from = 1;
+			}
+			if ($scope.preferences.to_time <= 12){
+				$scope.preferences.period_to_time = $scope.preferences.to_time;
+				$scope.period_to = 0;
+			} else {
+				$scope.preferences.period_to_time = $scope.preferences.to_time - 12;
+				$scope.period_to = 1;
+			}
+		}
+
+		var convertToFull = function() {
+			if ($scope.period_from == 0){
+				$scope.preferences.from_time = $scope.preferences.period_from_time;
+			} else {
+				$scope.preferences.from_time = $scope.preferences.period_from_time + 12;
+			}
+			if ($scope.period_to == 0){
+				$scope.preferences.to_time = $scope.preferences.period_to_time;
+			} else {
+				$scope.preferences.to_time = $scope.preferences.period_to_time + 12;
+			}
+		}
+
+		$scope.savePreferences = function() {
+			if (!$scope.full)
+				convertToFull();
+			//Provision for first time preferences, although they probably should be created on user join
+			if ($scope.preferences.id == null){
+				Preferences.save($scope.preferences).then(function (data) {
+					$scope.recentlySavedTimes = true;
+				})
+			} else {
+				Preferences.update($scope.preferences).then(function (data) {
+					$scope.recentlySavedTimes = true;
+				});
+			}
+		}
+
+		$scope.$watch('recentlySavedTimes', function(newVal, oldVal) {
+			$timeout(function(){
+				$scope.recentlySavedTimes = false;
+			}, 5000);			
+		});
+	}
+
+})();

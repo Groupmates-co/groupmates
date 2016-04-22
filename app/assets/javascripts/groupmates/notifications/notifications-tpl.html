@@ -1,0 +1,136 @@
+<div id="north" class="row">
+	<h4><i class="fa fa-bell-o"></i> Notifications</h4>
+</div>
+
+<div resize-chat ng-app="groupmates.notifications">
+	<div class="row">
+		<div class="small-12 medium-7 large-5 columns">
+
+		<br>
+		<p><strong>Flow of Activities</strong> (coming soon)</p>
+
+		<div id="notification-stream" class="resizable scrollbox comingsoon">
+			<strong>Today</strong>
+			<hr>
+			<ul class="square">
+			<li><img width="25" class="circle" src="https://s3.amazonaws.com/uifaces/faces/twitter/ohthatmeagan/128.jpg"> &nbsp; <strong>Megan</strong> mentionned you in a <a href="#">message</a>.</li>
+			<li><img width="25" class="circle" src="https://s3.amazonaws.com/uifaces/faces/twitter/katiefritz/128.jpg"> &nbsp; <strong>Katie</strong> updated the file <a href="#">Marketing.docx</a></li>
+			<li><img width="25" class="circle" src="https://s3.amazonaws.com/uifaces/faces/twitter/zwitscherlise/128.jpg"> &nbsp; <strong>Lisa</strong> deleted the file Notes.docx</li>
+			<li><img width="25" class="circle" src="https://s3.amazonaws.com/uifaces/faces/twitter/ohthatmeagan/128.jpg"> &nbsp; <strong>Megan</strong> added an <a href="#">event</a> to the timeline.</li>
+			</ul>
+
+			<strong>Yesterday</strong>
+			<hr>
+			<ul class="square">
+			<li><img width="25" class="circle" src="https://s3.amazonaws.com/uifaces/faces/twitter/katiefritz/128.jpg"> &nbsp; <strong>Katie</strong> updated the file Marketing.docx</li>
+			<li><img width="25" class="circle" src="https://s3.amazonaws.com/uifaces/faces/twitter/ohthatmeagan/128.jpg"> &nbsp; <strong>Megan</strong> updated the file research.docx</li>
+			<li><img width="25" class="circle" src="https://s3.amazonaws.com/uifaces/faces/twitter/zwitscherlise/128.jpg"> &nbsp; <strong>Lisa</strong> deleted the file Notes.docx</li>
+			</ul>
+	  	</div>
+
+		</div>
+		<div class="small-12 medium-5 large-7 columns">
+			<h4>Notify me</h4>
+			<section id="ontime" class="well">
+				<div class="onoffswitch">
+				    <input type="checkbox" name="ontimes" class="onoffswitch-checkbox" id="ontimes" ng-model="preferences.on_time">
+				    <label class="onoffswitch-label" for="ontimes">
+				        <span class="onoffswitch-inner"></span>
+				        <span class="onoffswitch-switch"></span>
+				    </label>
+				</div>
+				<h5>On specific time</h5> 
+				
+				<form id="notiftimes" ng-submit="savePreferences()">
+					<div ng-show="recentlySavedTimes">Settings saved successfully!</div>
+					<div>
+					<input type="checkbox" ng-model="full" ng-change="convertTime()" id="full"><label for="full">24 Hour Mode</label>
+					</div>
+					<div ng-show="full">
+						From <input ng-model="preferences.from_time" class="timeinput" ng-disabled="!preferences.on_time" maxlength="2" size="2">
+						To <input ng-model="preferences.to_time" class="timeinput" ng-disabled="!preferences.on_time" maxlength="2" size="2">
+					</div>
+					<div ng-hide="full">
+						From <input ng-model="preferences.period_from_time" class="timeinput" ng-disabled="!preferences.on_time" maxlength="2" size="2">
+						<button type="button" class="timetoggle" ng-disabled="!preferences.on_time" ng-model="period_from" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">{{ (period_from == 1)? "PM":"AM"  }}</button> 
+						To <input ng-model="preferences.period_to_time" class="timeinput" ng-disabled="!preferences.on_time" maxlength="2" size="2">
+						<button type="button" class="timetoggle" ng-disabled="!preferences.on_time" ng-model="period_to" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">{{ (period_to == 1)? "PM":"AM"  }}</button>	
+					</div>
+					<button type="submit">Save preferences</button>
+				</form>
+			</section>
+
+			<section id="onaction" class="well">
+
+				<p><strong>Notifications on Actions</strong> (coming soon)</p>
+
+				<div class="comingsoon">
+
+				<div class="onoffswitch">
+				    <input type="checkbox" name="onactions" class="onoffswitch-checkbox" id="onactions" ng-model="onactions">
+				    <label class="onoffswitch-label" for="onactions">
+				        <span class="onoffswitch-inner"></span>
+				        <span class="onoffswitch-switch"></span>
+				    </label>
+				</div>
+				<h5>On specific actions</h5>
+
+				Notify me when:
+				<table>
+					<tr>
+						<td>Someone</td>
+						<td>Mention</td>
+						<td>Me</td>
+						<td><i class="fa fa-mobile selected"></i> <i class="fa fa-envelope-o"></i></td>
+					</tr>
+					<tr>
+						<td>Thomas</td>
+						<td>Upload</td>
+						<td>a <strong>File</strong> of type <em>Document</em></td>
+						<td><i class="fa fa-mobile selected"></i> <i class="fa fa-envelope-o"></i></td>
+					</tr>
+					<tr>
+						<td>Thomas</td>
+						<td>Create</td>
+						<td>an <strong>Event</strong></td>
+						<td><i class="fa fa-mobile"></i> <i class="fa fa-envelope-o selected"></i></td>
+					</tr>
+					<tr>
+						<td>Someone</td>
+						<td>Mention</td>
+						<td>The <strong>word</strong> "<em>developer</em>"</td>
+						<td><i class="fa fa-mobile selected"></i> <i class="fa fa-envelope-o"></i></td>
+					</tr>
+					<tr>
+						<td>
+							<select>
+								<option>Someone</option>
+								<option>Thomas</option>
+								<option>Anastasios</option>
+								<option>Daniel</option>
+								<option>An Event</option>
+							</select>
+						</td>
+						<td>
+							<select>
+								<option>Mention</option>
+								<option>Upload</option>
+								<option>Update</option>
+								<option>Share</option>
+								<option>... more to come</option>
+							</select>
+						</td>
+						<td>
+							<input type="text">
+						</td>
+						<td><a class="button tiny">Add</a></td>
+					</tr>
+				</table>
+
+				</div>
+			</section>
+
+		</div>
+	</div>
+
+</div>

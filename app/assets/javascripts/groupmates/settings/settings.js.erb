@@ -1,0 +1,87 @@
+(function() {
+'use strict';
+
+angular
+
+	.module("groupmates.settings",['ngResource'])
+		.controller("SettingsController", SettingsController)
+		.controller("ReviewController",ReviewController)
+		.directive("starRating", starRating);
+
+	SettingsController.$inject = ['$scope', '$resource' , '$q', 'Project'];
+	ReviewController.$inject = ['$scope', '$http' , 'Project'];
+
+	function SettingsController($scope, $resource, $q, Project) {
+
+		$scope.project = Project.getProject();
+		$scope.isCreator = (Project.getProject().creator.id == Project.getUser());//
+
+		$scope.updateProject = function(){
+			if($scope.project.name == ""){
+				return;
+			}
+			$q.all([Project.save($scope.project)]).then(function(){
+				Project.updateTitle();
+			});
+		};
+	}
+
+	function ReviewController($scope, $http, Project) {
+
+		$scope.reviewed = false;
+
+		$scope.review = {
+			rating: 1,
+			feedback: "",
+			user_id: Project.getUser()
+		};
+
+		$scope.submitReview = function() {
+			$http.post('/api/v1/users/'+Project.getUser()+'/reviews.json',$scope.review).success(function() {
+				$scope.reviewed = true;
+				$scope.review = {
+					rating: 1,
+					feedback: "",
+					user_id: Project.getUser()
+				};
+			});
+		};
+	}
+
+	function starRating() {
+		return {
+			restrict : "A",
+			template : 	"<ul class='rating'>" +
+						"  <li ng-repeat='star in stars' ng-class='star' ng-click='toggle($index)'>" +
+						"    <i class='fa fa-star'></i>" + //&#9733
+						"  </li>" +
+						"</ul>",
+			scope : {
+				ratingValue : "=",
+				max : "=",
+				onRatingSelected : "&"
+			},
+			link : function(scope, elem, attrs) {
+				var updateStars = function() {
+					scope.stars = [];
+					for ( var i = 0; i < scope.max; i++) {
+						scope.stars.push({
+							filled : i < scope.ratingValue
+						});
+					}
+				};
+				scope.toggle = function(index) {
+					scope.ratingValue = index + 1;
+					scope.onRatingSelected({
+						rating : index + 1
+					});
+				};
+				scope.$watch("ratingValue", function(oldVal, newVal) {
+					if (newVal) { updateStars(); }
+				});
+			}
+		};
+	}
+
+
+})();

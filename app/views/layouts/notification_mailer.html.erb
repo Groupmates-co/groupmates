@@ -1,0 +1,13 @@
+<%= stylesheet_link_tag "mailer" %>
+
+<%= email_image_tag("groupmates_logo_white2.png") %>
+<h2>Hi <%= @user.first_name %>,</h2>
+<div class="subtitle"><%= @subtitle %></div>
+
+<div class="message">
+	<div class="message-content">
+		<%= yield %>
+	</div>
+</div>
+
+<small>Groupmates © Copyright 2015, All right reserved.</small>

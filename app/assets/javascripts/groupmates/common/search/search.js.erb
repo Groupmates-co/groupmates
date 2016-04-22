@@ -1,0 +1,116 @@
+(function() {
+'use strict';
+
+angular
+
+	.module("groupmates.search",[
+		'ngResource',
+		'ngRoute',
+		'elasticsearch',
+		'groupmates.services'
+	])
+
+	.config(['$routeProvider', function ($routeProvider) {
+	  $routeProvider.when('/search/:section/:query', {
+	    templateUrl:'<%= asset_path("groupmates/common/search/search-tpl.html") %>',
+	    controller: 'SearchController'
+	  });
+	}])
+
+	.controller('SearchController', SearchController)
+	.directive('liveSearch', liveSearch);
+
+	SearchController.$inject = ['$scope','$location','$route', '$routeParams','$rootScope','$sce','SearchService'];
+	liveSearch.$inject = ['$rootScope','$location', '$timeout'];
+
+	function SearchController($scope,$location, $route, $routeParams, $rootScope, $sce, SearchService){
+		//Necessary to render content into HTML
+		$scope.trustAsHtml = $sce.trustAsHtml;
+
+		// Last route before to enter search mode
+		var lastRoute = $route.current;
+
+		$rootScope.query = ($routeParams.query ? $routeParams.query : undefined);
+		if ($rootScope.query == undefined){
+			$location.path("/" + $routeParams.section);
+		}
+
+		/**
+		 * Watch the change of address
+		 * which manage the menu
+		 */
+		$scope.$on('$locationChangeSuccess', function(event) {
+			if ($location.path().indexOf("/search/") > -1){
+				$route.current = lastRoute;
+		        var path = $location.path().split("/");
+		        $scope.section = path[2];
+		        $scope.query = path[3];
+	    	}
+	    });
+
+
+		// Boolean for search loader
+		$scope.finishedLoading = false;
+		// Current section to search in
+		$scope.section = $routeParams.section;
+		// Query term
+		$scope.query = $routeParams.query;
+		// Search filters
+		$scope.filters = {};
+		// Search results
+		$scope.results = [];
+		// Allow HMML in formated results
+		$scope.trustAsHtml = $sce.trustAsHtml;
+
+		/**
+		 * Search function, is exectuted when controller is loaded 
+		 * and when a filter is changed
+		 */
+	    $scope.search = function() {
+			SearchService.search($scope.query, 0, $scope.filters).then(function(results) {
+				if (results.length !== 10) {
+					$scope.allResults = true;
+				}
+				var ii = 0;
+				for (; ii < results.length; ii++) {
+					$scope.results.push(results[ii]);
+				}
+				$scope.finishedLoading = true
+			});
+    	};
+
+    	//Init the first search
+		$scope.search();
+	}
+
+	function liveSearch($rootScope, $location, $timeout) {
+		return {
+			link: function(scope, elm, attrs) {
+				var min_search_length = 3;
+
+				$rootScope.search = function() {
+					$location.path("/search/"+ $rootScope.menu +"/" + $rootScope.query);
+				};
+
+				$rootScope.$watch('query', function (newValue, oldValue){
+					if (newValue != undefined && newValue != oldValue) {
+						if (newValue.length == 0){
+							//TODO: Link menu name with selected menu
+							$location.path("/" + $rootScope.menu);
+						}
+			/*			if (newValue.length >= min_search_length && $location.path().indexOf("/search") == -1){
+							$location.path("/search" + $location.path());
+							var index = 1;
+							//$timeout used to allow view to change.
+							$timeout(function() {
+								$('.live-search-bar').eq(index).focus();
+							});							
+						} else if (newValue.length < min_search_length && $location.path().indexOf("/search") > -1 ){
+							$location.path("/" + $rootScope.menuName);
+						} */
+					}
+				});
+			}
+	  	};
+	}
+})();

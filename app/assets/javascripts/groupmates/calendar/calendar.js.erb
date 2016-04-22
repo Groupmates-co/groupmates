@@ -1,0 +1,122 @@
+(function() {
+	'use strict';
+
+	angular
+	.module("groupmates.calendar",['ngDialog', 'groupmates.calendar.services', 'ui.timepicker'])
+
+	.config(['$routeProvider', function ($routeProvider) {
+		$routeProvider.when('/calendar', {
+			templateUrl:'<%= asset_path("groupmates/calendar/calendar-tpl.html") %>',
+			controller:'CalendarController'
+		});
+	}])
+
+	.controller("CalendarController", CalendarController);
+
+	CalendarController.$inject = ['$scope','ngDialog', 'Events','Project','$rootScope'];
+
+	function CalendarController($scope,ngDialog,Events,Project,$rootScope) {
+		
+		$('.fdatepicker').on('changeDate', function(ev){
+			$scope.newevent.happening.setDate(ev.date.getDate());
+			$scope.newevent.happening.setMonth(ev.date.getMonth());
+			$scope.newevent.happening.setYear(ev.date.getFullYear());
+		});
+
+		$scope.$watch('newevent.time',function(newVal,oldVal){
+			$scope.newevent.happening.setHours(newVal.getHours());
+			$scope.newevent.happening.setMinutes(newVal.getMinutes());
+			$scope.newevent.happening.setSeconds(newVal.getSeconds());
+		});
+
+		var initEvent =  function(){
+			$scope.newevent = {};
+			$scope.newevent.happening = new Date();
+			$scope.newevent.date = moment().format("DD/MM/YYYY");
+			$scope.newevent.time = new Date();
+
+			$scope.newevent.time.setMinutes( ($scope.newevent.time.getMinutes() >= 30 ? 30 : 0) );
+		};
+
+		initEvent();
+
+		$scope.timepickerOptions = {
+			step: 30,
+			timeFormat: 'H:i',
+			scrollDefault: 'now',
+		};
+
+		$scope.events = Events.query();
+		$scope.finishing = Project.getEndDate().format();
+		$scope.members = Project.getUsers();
+
+		$scope.saveEvent = function(newEvent){
+			if ($scope.newevent.title == null || $scope.newevent.description == null) { return; }
+
+			$scope.newevent.user_ids = $scope.selectedUsers;
+			if($scope.newevent.id) {
+				Events.update({'eventId': $scope.newevent.id,'method':'PUT'}, {"event":$scope.newevent});
+			}
+			else {
+				Events.save({"event":$scope.newevent});
+				$scope.events.push($scope.newevent);
+			}
+			//Display success OR scroll to the new event :p
+			initEvent();
+		};
+
+		$scope.updateEvent = function(selectedEvent) {
+			$scope.newevent = selectedEvent;
+			$scope.selectedUsers = selectedEvent.users;
+			$scope.newevent.date = moment(selectedEvent.happening).format("DD/MM/YYYY");
+			$scope.newevent.time = moment(selectedEvent.happening);
+		};
+
+		$scope.deleteEvent = function(selectedEvent){
+			$scope.deletedEvent = selectedEvent;
+			var dialog = ngDialog.open({
+				template: 'calendar-delete-tpl',
+				scope: $scope
+			});
+
+			dialog.closePromise.then(function(data) {
+				if (data.value == true){
+					Events.delete({'eventId': selectedEvent.id});
+					$scope.events = _.reject($scope.events,function(el) { 
+						return el.id === selectedEvent.id;
+					});					
+				}
+			});
+		};
+
+		$scope.selectedUsers = [];
+		$scope.toggleCheck = function (memberId) {
+			if ($scope.selectedUsers.indexOf(memberId) === -1) {
+				$scope.selectedUsers.push(memberId);
+			} else {
+				$scope.selectedUsers.splice($scope.selectedUsers.indexOf(memberId), 1);
+			}
+		};
+
+		$scope.isToday = function (date) {
+			var today = new Date();
+			return (today.getDate() == (new Date(date)).getDate());
+		};
+
+		$rootScope.todayEvents = function() {
+			var evCounter = 0;
+			var today = new Date();
+			for(i = 0; i< $scope.events.length; i++){
+				if((today.getDate() === (new Date($scope.events[i].happening)).getDate()) && (today.getMonth() === (new Date($scope.events[i].happening)).getMonth())) {
+					if(today.getTime() < (new Date($scope.events[i].happening)).getTime()){
+						evCounter++;
+					}
+				}
+			}
+			return evCounter;
+		};	
+
+	}
+
+})();
+

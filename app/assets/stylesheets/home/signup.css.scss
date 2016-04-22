@@ -1,0 +1,49 @@
+ #signup-form {
+
+ 	article {
+ 		position: relative;
+ 		&:before {
+ 			content: '';
+ 			position: absolute;
+ 			height: 100%;
+ 			display: block;
+ 			border: 1px solid #ddd;
+ 			margin-left: 45px;
+ 		}
+	 	header {
+	 		div.step {
+	 			float: left;
+	 			display: inline-block;
+	 			width: 60px;
+	 			height: 60px;
+	 			background: #eee;
+	 			text-align: center;
+	 			line-height: 60px;
+	 			border-radius: 50%;
+	 		}
+	 		h3 {
+	 			margin-left:100px;
+	 			padding: 0;
+	 			line-height: 60px;
+	 		}
+	 		clear: both;
+	 	}
+	 	.slide {
+	 		margin-left: 45px;
+	 	}
+ 	}
+ 	#new_user {
+ 		li {
+ 			padding-bottom: 0;
+ 		}
+ 	}
+ 	#oauth {
+ 		ul li {
+ 			padding-bottom: 0;
+ 		}
+ 		a.button {
+ 			margin-bottom: 0;
+ 		}
+ 	}
+ }
+

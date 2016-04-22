@@ -1,0 +1,152 @@
+<script type="text/ng-template" id="notes-delete-tpl">
+	<p>Are you sure you want to delete <b> {{deletedNote.title}} </b> ?</p>
+	<button ng-click="closeThisDialog(true)">Yes</button><button ng-click="closeThisDialog(false)">No</button>
+</script>
+
+<div id="north" class="row">
+	<h4><i class="fa fa-file-text-o"></i> Notes</h4>
+</div>
+
+<tabset ng-app="groupmates.notes">
+	<tab heading="My Notes">
+		<div ng-controller="NotesController" ng-init="init()" class="row">
+			<div class="small-12 medium-12 large-4 columns">
+				<div class="resizable scrollbox notes-list">
+					<div ng-click="addNote()" class="note">
+						<h6><i class="fa fa-plus"></i> Add a note</h6>
+						<p></p>
+					</div>
+					
+					<div ng-repeat="note in notes">
+						<div ng-click="selectNote(note)" class="note" ng-class="isSelected(note) ? 'selected' : 'not-selected'">
+							<div class="small-7 medium-7 large-7 columns title">
+								<h6>{{note.title || 'Untitled note' | truncate: 30}}</h6>
+							</div>
+							<div class="small-5 medium-5 large-5 columns date">
+								<time datetime="{{ note.created_at | date:'dd/MM/yyyy hh:mm' }}">
+									{{note.created_at | date : format : medium}}
+								</time>
+							</div>
+							<p>
+								<i ng-show="note.permission" title="This note is shared with project's members" class="fa fa-users"></i> {{ note.content || '&nbsp;' | rawText | truncate: 30 }}
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="small-12 medium-12 large-8 columns">	
+				<section class="paper" >
+					<form class="noselect" id="note-form" name="note-form" ng-submit="saveNote()" data-note-id="{{ note.id }}">
+						<div class="row">
+							<div class="large-7 columns">
+								<input type="text" id="notetitle" placeholder="My note title" ng-model="note.title" ng-keydown="startTyping()" ng-keyup="stopTyping()">
+							</div>
+
+							<div class="large-5 columns text-right">
+								<small class="saved"><span ng-hide="!recentlySaved">Saved! &nbsp; </span></small> 
+								<span class="wordcount" ng-show="wordcount > 1">{{wordcount}} words | &nbsp; </span>  
+								<input type="checkbox" id="sharing" ng-model="note.permission" ng-checked="note.permission" ng-click="changePermission()">
+								<label for="sharing">Shared</label>
+								<span ng-show="note.id">
+									| <a><strong  ng-click="deleteNote(note)"><i class="fa fa-trash"></i></strong></a>
+								</span>
+							</div>
+						</div>
+
+						<div id="editor" text-angular ta-text-editor-class="form-content" ng-model="note.content" ng-keydown="startTyping()" ng-keyup="stopTyping()" ta-toolbar-class="button-bar" ta-toolbar-group-class="button-group" ta-toolbar-button-class="button tiny secondary" ta-toolbar-button-active-class="primary" ta-toolbar="[['bold', 'italics', 'underline', 'ul', 'ol', 'redo', 'undo', 'clear','justifyLeft','justifyCenter','justifyRight','indent','outdent','fullScreen','exportAsPdf']]"></div>
+					</form>
+				</section>
+			</div>
+
+		</div>
+	</tab>
+
+	<tab heading="Shared">
+		<div ng-controller="SharedNotesController" class="row">
+			<div class="small-12 medium-12 large-4 columns">
+				<div class="resizable scrollbox notes-list">
+					<div ng-repeat="note in sharedNotes">
+
+						<div ng-click="selectNote(note)"  class="note" ng-class="isSelected(note) ? 'selected' : 'not-selected'">
+							<div class="hint--right hint--rounded left" data-hint="{{ note.user.fullname }}">
+								<img ng-src="{{ note.user.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src width="40" class="avatar circle">
+							</div>
+							<h6>{{note.title || 'Untitled note' | truncate: 30}}</h6>
+							<p>
+								<time datetime="{{ note.created_at | date:'dd/MM/yyyy hh:mm' }}">
+									{{note.created_at | date : format : medium}}
+								</time> &nbsp; 
+								<i ng-show="note.permission" title="This note is shared with project's members" class="fa fa-users"></i> &nbsp; {{ note.content || '' | rawText | truncate: 30 }}
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="small-12 medium-12 large-8 columns">	
+				<section ng-show="note.title != null" ng-bind-html-unsafe="note.content" class="paper">
+					<div class="right">
+						<small>Updated on {{ note.updated_at | date:'dd/MM/yy hh:mm' }}</small> &nbsp;
+						<div class="avatar hint--left hint--rounded" data-hint="{{ note.user.fullname }}">
+							<img ng-src="{{ note.user.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src width="40" class="circle">
+						</div>
+					</div>
+					<h4>{{ note.title }}</h4>
+					<div ng-bind-html="trustAsHtml(note.content )">{{ note.content  }}</div>
+				</section>
+				<!-- Show a placeholder -->
+			</div>
+
+		</div>
+	</tab>
+
+	<tab heading="Favorites">
+		<div ng-controller="FavoriteMessagesController">
+			<div class="row">
+				<div class="medium-4 large-offset-2 large-3 columns">
+					<select ng-model="filter.author" ng-init="filter.author = 0" ng-change="filter()">
+						<option value="0" selected>Everyone</option>
+						<option ng-repeat="author in authors" value="{{ author.id }}">{{ author.fullname }}</option>
+					</select>
+				</div>
+
+				<div class="medium-4 large-3 columns">
+					<select ng-model="filter.channel" ng-init="filter.channel = 0" ng-change="filter()">
+						<option value="0" selected>All channels</option>
+						<option ng-repeat="channel in channels" value="{{ channel.id }}">{{ channel.name }}</option>
+					</select>
+				</div>
+
+				<div class="medium-4 large-2 columns end">
+        	<select ng-model="filter.order" ng-init="filter.order = 0" ng-change="filter()">
+        		<option value="0" selected>Newest</option>
+        		<option value="1">Oldest</option>
+        	</select>
+				</div>
+			</div>
+
+			<div class="favorites-list" ng-repeat="favorite in filtered">
+				<div class="item" ng-bind-html-unsafe="favorite.message.content">
+					<img ng-src="{{ favorite.user.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src width="50" class="circle left">
+					<strong>{{ favorite.user.fullname }}</strong>  - 
+					<time class="hint--bottom hint--rounded"  data-hint="{{ favorite.message.created_at | date:'hh:mm a - dd MMMM yyyy' }}" datetime="{{ favorite.message.created_at }}">
+						{{ favorite.message.created_at | date:'dd MMMM' }}
+					</time>
+					 in <em>{{ favorite.message.channel.name }}</em>
+					<div ng-bind-html="trustAsHtml(favorite.message.content)">{{ favorite.message.content }}</div>
+				</div>
+			</div>
+		</div>
+	</tab>
+</tabset>
+
+
+
+
+
+
+
+
+
+

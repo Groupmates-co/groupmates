@@ -1,0 +1,462 @@
+(function() {
+	'use strict';
+
+	angular
+
+		.module("groupmates.messenger", [
+		'ngResource',
+		'ngRoute',
+		'luegg.directives',
+		'mm.foundation',
+		'groupmates.services',
+		'groupmates.messenger.services',
+		'groupmates.directives'
+	])
+
+	.config(['$routeProvider', function($routeProvider) {
+			$routeProvider.when('/messenger', {
+				templateUrl: '<%= asset_path("groupmates/messenger/messenger-tpl.html") %>',
+				controller: 'MessageController',
+				resolve: {
+					"ChatData": ['Chats', function(Chats) {
+						//Chats.setData();
+						return Chats;
+					}]
+				}
+			});
+		}])
+		.controller("MessageController", MessageController)
+		.controller("MessageNewController", MessageNewController);
+
+	MessageController.$inject = ['$scope', '$rootScope', '$timeout', '$sce', '$window', '$location', 'Project', 'Chats', 'Favorites', 'GroupmatesBot', 'Messages', 'PusherData', 'User','MsgViews'];
+	MessageNewController.$inject = ['$scope', '$rootScope', 'Upload', 'Project', 'Messages', 'PusherData'];
+
+	function MessageController($scope, $rootScope, $timeout, $sce, $window, $location, Project, ChatData, Favorites, GroupmatesBot, Messages, PusherData, User, MsgViews) {
+		//Necessary to render content into HTML
+		$scope.trustAsHtml = $sce.trustAsHtml;
+
+		//User objetcs used in the view
+		$scope.currentUser = Project.getCurrentUser();
+		$scope.recipient = null;
+		
+		// View states
+		$scope.adding = false; //When creating new chat
+		$scope.saving = false; //When saving new chat
+
+
+		ChatData.setData().then( function(data) {
+			Project.setUser().then( function(data) {
+				// Main data 
+				if($rootScope.currentChat) {
+					$scope.recipient = ($rootScope.currentChat.is_one_to_one)? 
+						ChatData.getPrivateChannelRecipient($rootScope.currentChat) :
+						null;
+				}
+				else
+					$rootScope.currentChat = ChatData.getMainChannel();
+
+				$scope.chats = ChatData.getData();
+				Messages.setData($rootScope.currentChat.id);
+				MsgViews.setData($rootScope.currentChat.id);
+				$scope.messages = Messages.getMessagesByChannel($rootScope.currentChat.id);
+				$scope.msgViews =  MsgViews.getData();
+
+
+				// Reset unread messages
+				ChatData.readMessages($rootScope.currentChat.id);
+			});
+
+		});
+
+		// $scope.$watch(function () { return MsgViews.getData(); }, function (newVal, oldVal) {
+  	//   	if (typeof newVal !== 'undefined')
+  	//      $scope.msgViews =  MsgViews.getData();
+		// });
+
+		// Ensure that the chat list is always up to date 
+		$scope.$watch(function () { return ChatData.getData(); }, function (newVal, oldVal) {
+    	if (typeof newVal !== 'undefined')
+       $scope.chats = ChatData.getData();
+		});
+
+		// Add a watcher on the currentChat for pusher updates
+		//$rootScope.$watch('currentChat', function (newVal, oldVal) {});
+
+
+		$scope.$watch(function () { return MsgViews.getData(); }, function (newVal, oldVal) {
+    	if (typeof newVal !== 'undefined')
+       $scope.msgViews = MsgViews.getData();
+		});
+		// ChatData.setSeen($rootScope.currentChat.id).then(function (data){
+		// 	$scope.seen = ChatData.getSeen($rootScope.currentChat.id);			
+		// 	console.log($scope.seen);
+		// });
+
+		$window.onfocus = function() {
+			setTimeout(function() {
+				if ($location.path().substr(1, 'messenger'.length) == 'messenger' || window.isActive) {
+					ChatData.readMessages($rootScope.currentChat.id);
+					$rootScope.messagesCount = ChatData.getUnreadMessages();
+					//$rootScope.new_messages -= $scope.chats[i].unseen;
+					//ChatData.addSeen($rootScope.currentChat.id,Messages.getLastId($rootScope.currentChat.id));
+					//Project.updateTitle();
+					$rootScope.$apply(); //this triggers a $digest
+				}
+			}, 100);
+		};
+
+		$timeout(function() {
+			if ($rootScope.members.length < 2) {
+				GroupmatesBot.invite();
+			}
+		}, 5000);
+
+		// Scope events relating to the chat.
+
+		//getPrivateChannelRecipient
+
+		$scope.privateChannel = function(user) {
+			var channel = ChatData.getPrivateChannelByUser(user);
+			$scope.recipient = user;
+			if(channel) {
+				$scope.changeChat(channel);
+			}
+			else {
+				ChatData.newPrivateChannel(user).then(function(data) {
+					$scope.changeChat(data);
+					PusherData.triggerNewChat(data);
+				});
+			}
+		};
+
+		$scope.newChannel = function() {
+			$scope.adding = true;
+		}
+
+		$scope.cancelNewChannel = function() {
+			$scope.adding = false;
+		}
+
+		$scope.saveNewChannel = function() {
+			if ($scope.saving == true) return;
+			if($scope.newName != null) {
+				$scope.saving = true;
+				$scope.adding = false;
+				ChatData.newChannel($scope.newName).then(function(data) {
+					$scope.changeChat(data);
+				 	$scope.newName = "";
+					$scope.saving = false;
+				});
+			}
+		}
+
+
+		$scope.isMainChannel = function(chat) {
+			return chat == ChatData.getMainChannel();
+		}
+
+		$scope.addUserToChannel = function(user, channel) {
+			if(!_.find(channel.users, function(u){ return u.id == user.id }))
+				channel.users.push(user);
+			
+			ChatData.update(channel);
+		}
+
+		$scope.joinChat = function(channel) {
+			if (!($scope.userInChat(channel))) {
+				ChatData.join(channel).then (function (data) {
+					$scope.changeChat(data);
+					PusherData.triggerNewUser(Project.getCurrentUser(), channel);					
+				});
+			}
+		}
+
+		$scope.leaveChat = function(channel) {
+			ChatData.leave(channel);
+			PusherData.triggerUserLeave(Project.getUser(), channel);
+			$scope.changeChat(ChatData.getMainChannel());
+		}
+
+		$scope.togglePrivate = function(channel) {
+			//Privacy change handled by ng-model
+			ChatData.update(channel).then(function(data) {
+				PusherData.triggerPolicyChange(data);
+			});
+		}
+
+		$scope.readMessages = function() {
+			ChatData.readMessages($rootScope.currentChat.id);
+			$rootScope.messagesCount = ChatData.getUnreadMessages();
+		}
+
+		$scope.editName = function(channel) {
+			channel.tempName = channel.name;
+			channel.editing = true;
+		}
+
+		$scope.stopEditing = function(channel) {
+			channel.editing = false;
+			if (channel.name != channel.tempName) {
+				if(channel.name == null)
+					channel.name = channel.tempName;
+				ChatData.update(channel).then(function(data) {
+						PusherData.triggerNameChange(data);
+				});
+			}
+		}
+
+		$scope.changeChat = function(channel) {
+			if($rootScope.currentChat == channel)
+				return;
+			// if ($scope.userInChat(chat)) {
+			if(!channel.is_one_to_one)
+				$scope.recipient = null;
+
+			Messages.setData(channel.id);
+			$rootScope.currentChat = channel;
+
+			//Refresh data
+			$scope.messages = Messages.getData();
+
+			// Reset the number of unread message for this channel
+			ChatData.readMessages(channel.id);
+			$rootScope.messagesCount = ChatData.getUnreadMessages();
+			//Change channel on Pusher
+			PusherData.changeChannel(channel);
+		}
+
+		$scope.userInChat = function(chat) {
+			if (!chat)
+				return false;
+
+			return ( _.find(chat.users, function(el) { return el.id == Project.getUser(); }) != null );
+		};
+
+		$scope.$watch('currentChat', function(newVal, oldVal) {
+			if (newVal != undefined) {
+				$scope.messages = Messages.getMessagesByChannel(newVal.id);
+				MsgViews.resetData(newVal.id);
+			// 	ChatData.setSeen(newVal.id).then( function (data){
+			// 		$scope.seen = ChatData.getSeen();
+			// 	});
+			// 	$scope.messages = Messages.getData();
+			// 	$rootScope.new_messages = 0;
+					$scope.canAddPage = true;
+			}
+		});
+
+		$scope.nextPage = function() {
+			$scope.canAddPage = false;
+			Messages.addPage();
+			$scope.messages = Messages.getData();
+			$timeout(function() {
+				$scope.canAddPage = true;
+			}, 1000);
+		};
+
+		$scope.isFavorite = function(messageId) {
+			return _.find($rootScope.favorites, function(el) {
+				return el.message_id == messageId && el.user_id == Project.getUser()
+			});
+		};
+
+		$scope.toggleFavorite = function(messageId) {
+			var fav = $scope.isFavorite(messageId);
+			if (fav != null) {
+				Favorites.delete({
+					userId: Project.getUser(),
+					favoriteId: fav.id
+				});
+				$rootScope.favorites = _.reject($rootScope.favorites, function(el) {
+					return el.id === fav.id;
+				});
+			} else {
+				var favorite = {
+					"user_id": Project.getUser(),
+					"project_id" : Project.id,
+					"message_id": messageId,
+					"content": " "
+				};
+				Favorites.save({}, {
+					'userId': Project.getUser(),
+					'favorite': favorite
+				}, function(data) {
+					$rootScope.favorites.push(data);
+				});
+			}
+		};
+
+		$scope.isOldMessage = function(oldMessage, message) {
+			if (oldMessage == null) {
+				return;
+			}
+			var d1 = new Date(oldMessage.created_at);
+			var d2 = new Date(message.created_at);
+
+			if (d1.getDate() < d2.getDate()) {
+				return true;
+			}
+		};
+
+		/** 
+		 * Compare two dates (method above could be refactored with that)
+		 * Return true if date1 is older than date2
+		 */
+		$scope.isOld = function(date1, date2) {
+			return (moment(date1).unix() < moment(date2).unix());
+		}
+
+		// Scope events relating to seen messages.
+
+		$scope.hasSeen = function(message) {
+			var hasSeen = _.find($scope.msgViews, function(el) {
+				if (el.message_id == message.id && el.user_id != message.user.id && el.user_id != Project.getUser() )
+					return true;
+			});
+			return hasSeen != undefined;
+		}
+
+		$scope.isOwner = function(view) {
+			return (view.user_id == Project.getUser());
+		}
+
+		//  $scope.getSeenUsers = function(message) {
+		//  	var users = [];
+		//  	var id = message.id;
+		// 	var owner = message.user.id;
+
+		//  	for (var i = 0; i < $scope.seen.length ; i++){
+		//  		if ($scope.seen[i].message_id == id){
+		//  			if ($scope.seen[i].user_id != owner && $scope.seen[i].user_id != Project.getUser()){
+		//  				users.push($scope.seen[i].user_id);						
+		//  			}
+		//  		}
+		//  	}
+		//  	return users;
+		//  }
+
+	}
+
+	function MessageNewController($scope, $rootScope, Upload, Project, Messages, PusherData) {
+		$scope.message = {};
+		$scope.message.file = null;
+		$scope.message.assets_ids = [];
+
+		var saveMessage = function() {
+			Messages.saveMessage($scope.message);
+			$scope.message = {};
+			$scope.message.file = null;
+			$scope.message.assets_ids = [];
+			$rootScope.seenBy = [];
+		}
+
+		$scope.postMessage = function() {
+			if ($scope.message.content == null) return;
+			$scope.message.user_id = Project.getUser();
+
+			if ($scope.message.file) {
+				Upload.upload($scope.message.file,
+					function(data) {
+						$scope.message.assets_ids.push(data.id);
+						saveMessage();
+					});
+			} else {
+				saveMessage();
+			}
+		};
+
+		$scope.removeFile = function() {
+			$scope.message.file = null;
+		}
+
+		$scope.onFileSelect = function($files) {
+			//for (var i = 0; i < $files.length; i++) {
+			$scope.message.file = $files[0]; //push $files[i]
+			//}
+		};
+
+		var typing = false;
+		var delays = [];
+
+		$scope.startTyping = function() {
+			if (false === typing) {
+				PusherData.startTyping();
+				typing = true;
+			}
+			angular.forEach(delays, function(delay) {
+				clearTimeout(delay);
+			});
+			delays = [];
+		};
+
+		$scope.stopTyping = function() {
+			delays.push(setTimeout(function() {
+				PusherData.stopTyping();
+				typing = false;
+			}, 1000));
+		};
+		//Emoji for the chat
+
+	  $scope.emojis = {
+	    "😄": ":smiley:",
+	    "😊": ":)",
+	    "😉": ":wink:",
+	    "😜": ":stuck_out_tongue_winking_eye:",
+	    "😍": ":heart_eyes:",
+	    "😱": ":scream:",
+	    "😂": ":joy:",
+	    "😑": ":expressionless:",
+	    "😧": ":worried:",
+	    "😎": ":sunglasses:",
+	    "😭": ":sob:",
+	    "😴": ":sleeping:",
+	    "😶": ":no_mouth:",
+	    "😡": ":rage:",
+	    "😨": ":worried:",
+	    "😋": ":stuck_out_tongue:",
+	    "😅": ":sweat_smile:",
+	    "😌": ":relieved:",
+	    "😔": ":pensive:",
+	    "😵": ":dizzy_face:",
+	    "😖": ":confounded:",
+	    "😳": ":blush:",
+	    "😒": ":unamused:",
+	    "😩": ":weary:",
+	    "😮": ":open_mouth:",
+	    "😇": ":innocent:",
+	    "😈": ":smiling_imp:",
+	    "😹": ":joy_cat:",
+	    "😸": ":smile_cat:",
+	    "😺": ":smiley_cat:",
+	    "😻": ":heart_eyes_cat:",
+	    "😾": ":pouting_cat:",
+	    "😽": ":kissing_cat:",
+	    "😿": ":crying_cat_face:",
+	    "🙀": ":scream_cat:",	    
+	    "😤": ":triumph:",
+	    "🙉": ":hear_no_evil:",
+	    "🙊": ":speak_no_evil:",	  
+	    "🙈": ":see_no_evil:",
+	    "👍": ":thumbsup:",		      	 
+		"👎": ":thumbsdown:",
+	    "🚌": ":hear_no_evil:",
+	    "🚔": ":speak_no_evil:",	  
+	    "🚀": ":see_no_evil:",
+	    "💰": ":thumbsup:",		      	 
+	  };
+
+	  $scope.addEmoji = function (url){
+	  	//Declare the position of the cursor inside the message_content text area
+	  	var caretPos = document.getElementById("message_content").selectionStart;
+	  	var textAreaTxt = jQuery("#message_content").val();
+	  	if(typeof $scope.message.content === "undefined"){
+	  		$scope.message.content = url;
+	  		var caretPos = document.getElementById("message_content").selectionStart;
+	  	}
+	  	else{
+	  		$scope.message.content = textAreaTxt.substring(0, caretPos) + " " + url + " " + textAreaTxt.substring(caretPos);
+	  	}
+	  };		
+	}
+
+})();

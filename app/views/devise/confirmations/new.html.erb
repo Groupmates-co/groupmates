@@ -1,0 +1,22 @@
+<div class="row">
+	<div class="large-4 columns large-centered">
+		<h3 class="text-center"><a href="<%= root_path %>"><%= image_tag "groupmates_icon2.png", size: "60x60" %></a><br/>Resend confirmation instructions</h3>
+		<% if notice %>
+		<div data-alert class="alert-box info"><%= notice %>
+			<a href="#" class="close">&times;</a>
+		</div>
+		<% end %>
+		<% if alert %>
+		<div data-alert class="alert-box info"><%= alert %>
+			<a href="#" class="close">&times;</a>
+		</div>
+		<% end %>
+		<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+		<%= devise_error_messages! %>
+		<div><%= f.label :email %><br />
+		<%= f.email_field :email, autofocus: true %></div>
+		<div><%= f.submit "Resend confirmation instructions", class: "button expand" %></div>
+		<% end %>
+		<br>
+	</div>
+</div>

@@ -1,0 +1,100 @@
+<script type="text/ng-template" id="calendar-delete-tpl">
+	<p>Are you sure you want to delete <b> {{deletedEvent.title}} </b> ?</p>
+	<button ng-click="closeThisDialog(true)">Yes</button><button ng-click="closeThisDialog(false)">No</button>
+</script>
+
+<div id="north" class="row">
+	<h4><i class="fa fa-calendar"></i> Calendar</h4>
+</div>
+
+<div resize-chat ng-app="groupmates.calendar">
+	<div class="row">
+		<div class="small-12 medium-12 large-8 columns">
+
+		<div class="resizable scrollbox" id="timeline">
+  	<section class="elements">
+	    <article class="element" ng-repeat="ev in events | orderBy:'happening'">
+	      <a ng-click="expand = !expand" class="element-date">
+					<time datetime="{{ ev.happening | date:'dd/MM/yyyy hh:mm' }}" title="{{ ev.happening | date:'dd/MM/yyyy hh:mm' }}"><span ng-class="{today: isToday(ev.happening) }">{{ ev.happening | date:"dd"}}</span><br>{{ ev.happening | date:"MMM" }}</time>
+	      </a>
+	      <div class="element-body">
+	        <div class="text">
+	          <p ng-click="expand = !expand">
+	          	<span ng-show="ev.description != null" class="expand-btn">
+	          		<i ng-class="{ 'fa fa-chevron-up': expand , 'fa fa-chevron-down': !expand  }"></i>
+	          	</span>
+
+							<ul class="user-notified">
+								<li ng-repeat="user in ev.users">
+									<img ng-src="{{ user | getPictureUrl }}" fallback-src="{{ 1|fallback }}" loading-src width="25" height="25" class="circle">
+								</li>
+							</ul>
+	          	
+	          	<span ng-click="expand = !expand"><strong>{{ ev.happening | date:"HH:mm" }}</strong> {{ ev.title }}</span>
+	          </p>
+	         	<div class="slide" ng-show="expand">
+	          	<p>{{ ev.description }}</p>
+	         		<ul>
+	          		<li><a ng-click="updateEvent(ev)"><i class="fa fa-pencil-square-o"></i> Edit</a></li>
+								<li><a ng-click="deleteEvent(ev)"><i class="fa fa-trash-o"></i> Delete</a></li>
+	          	</ul>
+	          	<span class="clearfix"></span>
+	         	</div>
+	        </div>
+	      </div>
+	    </article>
+
+	    <article class="element end">
+	      <a class="element-date">
+	      	<time datetime="{{ finishing | date:'dd/MM/yyyy hh:mm' }}" title="{{ finishing | date:'dd/MM/yyyy hh:mm' }}"><span>{{ finishing | date:"dd"}}</span><br>{{ finishing | date:"MMM" }}</time>
+	      </a>
+	      <div class="element-body">
+	        <div class="text">
+	          <p>End of the project</p>
+	        </div>
+	      </div>
+	    </article>
+	  </section>
+
+	  </div>
+
+		</div>
+		<div class="small-12 medium-12 large-4 columns">
+			<h4 ng-show="!newevent.id">Add an event</h4>
+			<h4 ng-show="newevent.id">Edit an event</h4>
+			<form id="event-form" method="post">
+				<div class="row collapse prefix-radius">
+	        <div class="small-2 columns">
+	          <span class="prefix"><i class="fa fa-calendar"></i></span>
+	        </div>
+	        <div class="small-10 columns">
+	          <input type="text" data-date-format="dd/mm/yyyy" class="fdatepicker" fdatepicker="" placeholder="dd/mm/yyyy" ng-model="newevent.date">
+	        </div>
+	      </div>
+	      <div class="row collapse prefix-radius">
+	        <div class="small-2 columns">
+	          <span class="prefix"><i class="fa fa-clock-o"></i></span>
+	        </div>
+	        <div class="small-10 columns">
+	          <input type="text" ui-timepicker="timepickerOptions" placeholder="hh:mm" ng-model="newevent.time"></input>
+	        </div>
+	      </div>
+				<input type="text" placeholder="Title of the event" ng-model="newevent.title" />
+				<textarea rows="3" name="description" placeholder="What's the event is about" ng-model="newevent.description"></textarea>
+				
+				<label>Members to notify:</label>
+				<ul>
+					<li ng-repeat="member in members">
+						<input type="checkbox" name="users[]" id="user-{{ member.id }}" class="" ng-checked="selectedUsers.indexOf(member.id) != -1" ng-click="toggleCheck(member.id)">
+						<label for="user-{{ member.id }}">
+						<img ng-src="{{ member.id | getPictureUrl }}" fallback-src="{{ 1|fallback }}" loading-src  width="25" height="25" class="circle"> 
+						{{ member.id |getUserName : true }}
+						</label>
+					</li>
+				</ul>
+				<input type="submit" class="button tiny primary" value="{{ (newevent.id) ? 'Edit' : 'Add' }}" ng-click="saveEvent(newevent)" />
+			</form>
+		</div>
+	</div>
+
+</div>

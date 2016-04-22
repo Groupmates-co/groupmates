@@ -1,0 +1,166 @@
+(function() {
+'use strict';
+
+// https://github.com/johnpapa/angularjs-styleguide#services
+window.pusherClient = new Pusher('<%= Rails.configuration.x.pusher_api_key %>', {authEndpoint: '/api/v1/pusher/auth'});
+
+/**
+ * Check if the tab is active or not
+ */
+window.isActive = true;
+function onBlur() {
+    window.isActive = false;
+};
+function onFocus(){
+    window.isActive = true;
+};
+if (/*@cc_on!@*/false) { // check for Internet Explorer
+    document.onfocusin = onFocus;
+    document.onfocusout = onBlur;
+} else {
+    window.onfocus = onFocus;
+    window.onblur = onBlur;
+}
+
+
+angular
+  .module('groupmates',[
+    'groupmates.messenger',
+    'groupmates.messenger.services',
+    'groupmates.files',
+    'groupmates.calendar',
+    'groupmates.notes',
+    'groupmates.mates',
+    'groupmates.notifications',
+    'groupmates.settings',
+    'groupmates.search.services',
+    'groupmates.search',
+    'ngRoute',
+    'pusher-angular',
+    'dcbImgFallback',
+    'groupmates.services',
+    'groupmates.services.chat',
+    'groupmates.filters',
+  ])
+
+  .constant("config", {
+    "api_url": "/api/v1",
+    "user_placeholder": "<%= User::DEFAULT_PROFILE_PICTURE %>",
+    "user_pictures_folder": "/uploads/users/",
+  })
+
+  .config(['$routeProvider','$sceDelegateProvider', '$compileProvider',
+    function($routeProvider, $sceDelegateProvider, $compileProvider) {
+
+      $routeProvider.
+        when('/files', {
+          templateUrl: '<%= asset_path("groupmates/files/files-tpl.html") %>',
+          controller: 'FilesController'
+        }).
+        when('/settings', {
+          templateUrl: '<%= asset_path("groupmates/settings/settings-tpl.html") %>',
+          controller: 'SettingsController'
+        }).
+        otherwise({
+          redirectTo: '/messenger'
+        });
+
+      $sceDelegateProvider.resourceUrlWhitelist(['self', new RegExp('^(http[s]?):\/\/static.groupmates\.co/.+$')]);
+
+      $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|mailto|skype):/);
+    }
+  ])
+  .run(groupmates)
+  .controller("ModalController", ModalController)
+  .controller("MenuController", MenuController);
+
+
+  groupmates.$inject = ['$rootScope', '$q','$resource','$location', '$window', 'Project', 'Favorites', 'PusherData', 'Chats'];
+  function groupmates($rootScope, $q, $resource, $location, $window, Project, Favorites, PusherData, Chats) {
+
+    //Promise init
+    $q.all([
+      Project.setProject(),
+      Project.setUser(),
+      Chats.setData(),
+    ]).then( function(responses){
+
+    //Initialise everything requiring project properties
+    $rootScope.typing = [];
+    $rootScope.messagesCount = 0;
+
+    $rootScope.breadcrumbs = [{'id': 0, 'name': 'Files'}];
+    $rootScope.todayEvents;
+
+    // Ensure that the notifications are always up to date
+    $rootScope.$watch(function () { return Chats.getUnreadMessages(); }, function (newVal, oldVal) {
+      if (typeof newVal !== 'undefined') {
+        $rootScope.messagesCount = Chats.getUnreadMessages();
+        Project.updateTitle();
+      }
+    });
+
+    //Init Favorites
+    $rootScope.favorites = Favorites.query({userId: Project.getUser()});
+
+    $(window).bind("beforeunload", function(e) {
+      var request = new XMLHttpRequest();
+      request.open('GET', '/api/v1/users/'+ Project.getUser() +'/updateproject/'+Project.id, false);
+      request.send(null);
+    });
+
+    $rootScope.members = Project.getUsers();
+    PusherData.presenceChannel.bind('pusher:subscription_succeeded', function(members) {
+      $rootScope.presences = members;
+    });
+
+    });
+  }
+
+  ModalController.$inject = ['$scope','Modal'];
+  function ModalController($scope, Modal) {
+    $scope.settings = Modal.getSettings();
+    $scope.ok = function () { Modal.ok(); };
+    $scope.cancel = function () { Modal.close(); };
+  }
+
+  MenuController.$inject = ['$scope','$location','$rootScope','Project'];
+  function MenuController($scope, $location, $rootScope, Project) {
+    var menus = ["messenger","files","calendar","notes","mates","notifications","settings"];
+    $rootScope.menu = _.find(menus, function(el){return $location.path().indexOf(el) > -1 });
+    if ($rootScope.menu == null)
+      $rootScope.menu = "messenger";
+
+    $scope.getActive = function(path) {
+      return ( (path.indexOf($rootScope.menu) > -1) ? 'active' : '' );
+
+/* I'm not sure why this method was unnecessarily complicated.
+
+      var urlpath = $location.path().substr(0, path.length);
+      console.log(urlpath);
+      if (urlpath == "/search") {
+        return ($rootScope.menu == menu)? 'active' : '';
+      }
+      else
+        return (urlpath == path) ? 'active':''; */
+    }
+
+
+    $scope.isSelected = function(menu) {
+      return menu == $rootScope.menu;
+    };
+
+    $scope.isSearching = function() {
+      return ( $location.path().indexOf("/search") > -1 );
+    };
+
+    $scope.setMenu = function(menu) {
+      $rootScope.menu = menu;
+      if ($scope.isSearching()){
+        var oldMenu = $location.path().split("/")[2];
+        $location.path( $location.path().replace(oldMenu,menu));
+      }
+    }
+  }
+
+})();

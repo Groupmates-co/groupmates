@@ -1,0 +1,52 @@
+/* ---- Notifications ----- */
+
+#ontime, #onaction {
+  .onoffswitch {
+    float: left;
+    margin-right: 10px;
+  }
+  h5 {
+    color: #000;
+    padding-top: 5px;
+  }
+
+  form {
+    padding: 10px 10px 0px 10px;
+    .timeinput {
+      display: inline-block;
+      width: auto;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.3em;
+    }
+    .timetoggle {
+      width: auto;
+      padding: 5px;
+      background: #eee;
+      color: #333;
+    }
+  }
+
+  table {
+    width: 100%;
+    td {
+      font-size: 0.8em;
+      i {
+        font-size: 1.4em;
+      }
+      i.selected {
+        color: #0072ff;
+      }
+    }
+  }
+}
+
+.comingsoon {
+  opacity: 0.4;
+}
+
+#notification-stream {
+  ul li {
+    font-size: 0.8em;
+  }
+}

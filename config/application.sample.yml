@@ -1,0 +1,64 @@
+# Add configuration values here, as shown below.
+
+# --- General settings
+
+# Mandrill
+mandrill_username: "xxx@xxx.xx"
+mandrill_password: "1234567890"
+
+# CSRF secret
+secret_key_base: "qwertyuio1234567890qwertyuiop"
+assets_domain: "static.groupmates.co"
+# Devise
+devise_secret: "qwertyuiop1234567890qwertyuiop"
+
+production:
+  # Oauth apps
+  omniauth_facebook_api_key: "xxx"
+  omniauth_facebook_api_secret: "xxx"
+  omniauth_google_api_key: "xxxxxxx.apps.googleusercontent.com"
+  omniauth_google_api_secret: "xxx"
+
+  # AWS S3
+  aws_bucket: "groupmates"
+  aws_access_key_id: "xxx"
+  aws_secret_access_key: "xxx"
+
+  # Pusher
+  pusher_app_id: "123456789"
+  pusher_api_key: "xxx"
+  pusher_api_secret: "xxx"
+
+staging:
+  # Oauth apps
+  omniauth_facebook_api_key: "xxx"
+  omniauth_facebook_api_secret: "xxx"
+  omniauth_google_api_key: "xxxxxxx.apps.googleusercontent.com"
+  omniauth_google_api_secret: "xxx"
+
+  # AWS S3
+  aws_bucket: "groupmates"
+  aws_access_key_id: "xxx"
+  aws_secret_access_key: "xxx"
+
+  # Pusher
+  pusher_app_id: "123456789"
+  pusher_api_key: "xxx"
+  pusher_api_secret: "xxx"
+
+development:
+  # Oauth apps
+  omniauth_facebook_api_key: "xxx"
+  omniauth_facebook_api_secret: "xxx"
+  omniauth_google_api_key: "xxxxxxx.apps.googleusercontent.com"
+  omniauth_google_api_secret: "xxx"
+
+  # AWS S3
+  aws_bucket: "groupmates"
+  aws_access_key_id: "xxx"
+  aws_secret_access_key: "xxx"
+
+  # Pusher
+  pusher_app_id: "123456789"
+  pusher_api_key: "xxx"
+  pusher_api_secret: "xxx"

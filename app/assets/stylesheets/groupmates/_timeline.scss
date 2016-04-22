@@ -1,0 +1,184 @@
+// Variables
+@import "variables";
+
+#timeline {
+
+	padding-top: 30px;
+	padding-right: 10px;
+	// article, aside, figure, footer, header, hgroup, menu, nav, section {
+	// 	display: block; 
+	// }
+
+	overflow-y: scroll;
+	height: 500px;
+
+	.element {
+	  overflow: hidden;
+	  padding: 0 0 0.6em;
+		*zoom: 1;
+
+		.text {
+			padding: 10px;
+		  border: 1px solid #e5e5e5;
+	    border-radius: 10px;
+	    background: #fff;
+			span.expand-btn {
+				display: inline-block;
+				float: right;
+				color: #999;
+			}
+	    p {
+	    	font-size: 0.9em;
+	    	margin-bottom: 0;
+	    	strong {
+	    		padding-right: 10px;
+	    	}
+	    }
+	    div {
+	    	p {
+	    		font-size: 0.8em;
+	    	}
+	    	ul {
+	    		float: right;
+	    		margin: 0;
+	    		li {
+	    			font-size: 0.7em;
+	    			list-style-type: none;
+	    			display: inline;
+	    			padding-right: 10px;
+	    			a{
+	    				color: inherit;
+	    			}
+	    		}
+	    	}
+	    }
+	   	p:last-child {
+    		margin: 0;
+    		font-size: 0.8em;
+			}
+		}
+	}
+
+	.element-date {
+	    float: left;
+	    margin-right: 33px;
+	    border-radius: 5px;
+	    overflow: hidden;
+	    color: #333;
+	     time {
+	    	display: inline-block;
+	    	width: 50px;
+	    	height: 50px;
+	    	text-align: center;
+	    	vertical-align: bottom;
+	    	padding-top: 5px;
+	    	line-height: 17px;
+	    	font-size: 0.8em;
+	    	span {
+	    		font-weight: bold;
+	    		font-size: 1.4em;
+	    		color: $groupmates-blue;
+	    	}
+	    }
+
+		.today {
+			color: $groupmates-orange;
+	    }
+	}
+
+	.end {
+	  overflow: hidden;
+		*zoom: 1;
+		padding: 0;
+
+		.text {
+			border: 0px;
+			padding: 10px 0px 0px 10px;
+			background: none;
+			text-transform: uppercase;
+			p {
+				font-size: 0.7em;
+			}
+		}
+
+		.element-date {
+		    color: #333;
+		     time {
+		    	border: 1px solid #eee;
+		    	border-radius: 50%;
+		    	span {
+		    		color: $groupmates-orange;
+		    	}
+		    }
+		}
+	}
+
+	.element-body {
+	    overflow: hidden;
+	}
+
+	/* Decoration */
+
+	.elements, .element {
+	    position: relative;
+	}
+
+	.elements:before,
+	.element:before,
+	.element .text:before {
+	    content: "";
+	    position: absolute;
+	    top: 0;
+	    left: 65px;
+	}
+
+	.elements:before {
+	    width: 3px;
+	    top: -30px;
+	    bottom: 22px;
+	    background: rgba(0,0,0,0.1);
+	}
+
+	.element:before {
+	    width: 13px;
+	    height: 13px;
+	    border: 3px solid #fff;
+	    border-radius: 100px;
+	    margin: 16px 0 0 -6px;
+	    box-shadow: 0 1px 1px rgba(0,0,0,0.2), inset 0 1px 1px rgba(0,0,0,0.1);
+	    background: #ccc;
+	}
+
+	.element:hover:before {
+	    background: $groupmates-orange;
+	}
+
+	.element .text:before {
+	    top: 18px;
+	    left: 78px;
+	    width: 9px;
+	    height: 9px;
+	    border-width: 0 0 1px 1px;
+	    border-style: solid;
+	    border-color: #e5e5e5;
+	    background: #fff;
+	    -webkit-transform: rotate(45deg);
+	    -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	    -o-transform: rotate(45deg);
+	}
+
+	.end:before {
+		background: $groupmates-blue;
+	}
+
+	.end .text:before {
+	    border-width: 0;
+	    border-color: transparent;
+	    border-style: none;
+	    background: none;
+	}
+}
+
+
+

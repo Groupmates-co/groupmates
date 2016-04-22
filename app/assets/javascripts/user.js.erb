@@ -1,0 +1,72 @@
+// This is a manifest file that'll be compiled into application.js, which will include all the files
+// listed below.
+//
+// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
+// or vendor/assets/javascripts of plugins, if any, can be referenced here using a relative path.
+//
+// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
+// compiled file.
+//
+// Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
+// about supported directives.
+//
+//= require foundation-datepicker/js/foundation-datepicker.js
+//= require_self
+
+// Replace image in input file
+
+function readURL(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      $('#picture').attr('src', e.target.result);
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+var startDate = new Date();
+$('.newDate').fdatepicker()
+  .on('changeDate', function(ev) {
+    if(ev.date > startDate){
+      var timeDiff = ev.date.getTime() - startDate.getTime();
+      var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+      $('#project_duration').val(diffDays);
+    }
+  });
+
+
+$("#project_name").bind("blur", function() {
+  setTimeout(checkName,100);
+});
+
+
+// Add member email on Create a project
+var memberLine = $('#members-list .member-email');
+$("#add_member").click(function(e){
+	e.preventDefault();
+	var newMember = $(memberLine).clone();
+	var count = $('#members-list .member-email').size();
+	newMember = $(newMember).first().val('');
+	newMember = $(newMember).first().attr('name', 'member['+(count+1)+']');
+	newMember = $(newMember).first().attr('id', 'member_'+(count+1));
+	$('#members-list').append(newMember);
+});
+
+var checkName = function() {
+
+  var name = $('#project_name').val();
+  if (name.length > 3 ){
+    $.get("/checkname", {name: name}, function(nameAvailable) {
+      if (nameAvailable){
+        $('#name-available').removeClass('available');
+        $('#name-available').addClass('available');
+        $('#name-available').text("This project name is available!");
+      } else {
+      	$('#name-available').removeClass('available');
+        $('#name-available').addClass('unavailable');
+        $('#name-available').text("This project name has already been taken. :(");
+      }
+    });   
+  }
+};

@@ -1,0 +1,37 @@
+<article>
+<h3>All versions of {{latestFile.name}}</h3>
+				<div class="scrollbox">
+					<table>
+						<thead>
+							<tr>
+								<th>Name </th>
+								<th>Type</th>
+								<th>Size</th>
+								<th><a href="" ng-click="reverse=!reverse">Version </a>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="f in oldFiles | orderBy:predicate2:reverse">
+								<td>
+								<i class="fa {{ f.uploaded_content_type | getFileTypeIcon: 'icon' }}"></i>  
+								<span ng-show="f.editing == undefined || !f.editing">
+									<span ng-if="f.uploaded_content_type != 'folder' && !canBePreviewed(f.uploaded_content_type)"><a ng-click="download(f)">{{ f.name }}</a>
+									</span>
+									<span ng-if="f.uploaded_content_type != 'folder' && canBePreviewed(f.uploaded_content_type)">
+										<a  ng-click="setPreview(f)" href="" target="_blank">{{ f.name }}</a>
+									</span>
+								</span>
+								<span ng-if="f.version == latestFile.version"> (current)</span>
+								</td>
+								<td>{{ f.uploaded_content_type | getFileTypeIcon: "type" }}</td>
+								<td><span ng-if="f.uploaded_content_type != 'folder'">{{ f.uploaded_file_size/1000 | number:0 }} kB</span></td>
+								<td>
+								{{f.version}}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</article>
+			

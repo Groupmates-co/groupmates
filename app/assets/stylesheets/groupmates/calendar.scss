@@ -1,0 +1,41 @@
+/* ---- Calendar ----- */
+
+@import "groupmates/variables";
+
+#event-form {
+	textarea, label, input{
+		margin-bottom: 5px;
+	}
+	ul {
+		margin:0 0 10px 0;
+		li {
+			list-style-type: none;
+			input[type=checkbox] {
+				display: none;
+			}
+			input[type=checkbox] + label img {
+				height: 25px;
+				width: 25px;
+			}
+
+			input[type=checkbox]:checked + label img {
+				border: 3px solid $groupmates-orange;
+			}
+		}
+	}
+}
+
+.user-notified {
+	display: inline;
+	margin: 0px;
+	li {
+		float: right;
+		margin: 0;
+		list-style-type: none;
+		padding-right: 5px;
+		img {
+			width: 25px;
+			height: 25px;
+		}
+	}
+}

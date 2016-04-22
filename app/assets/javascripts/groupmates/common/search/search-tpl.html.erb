@@ -1,0 +1,36 @@
+<div id="north" class="row">
+	<h4><i class="fa fa-search"></i> Search</h4>
+</div>
+
+<!-- 	<ul class="small-block-grid-3">
+		<li>
+			<select ng-change="search()" ng-model="filters.author">
+				<option ng-selected="true">Select a mate</option>
+				<option ng-repeat="member in $root.members" value="{{ member.id }}">{{ member.fullname }}</option>
+			</select>
+		</li>
+		<li><input type="checkbox" ng-click="filter" ng-model="filters.today"> Today?</li>
+		<li>qq</li>
+	</ul> -->
+<div class="warning text-center">
+	<strong>Work in progress</strong> - Working hard to deliver you a great search engine ;)
+	<br>
+</div>
+
+<div class="text-center" ng-hide="finishedLoading">
+	<ng-include src="'/assets/groupmates/common/partials/loader.html'"></ng-include>
+</div>
+
+<div ng-show="finishedLoading">
+			
+			<div class="favorites-list" ng-repeat="msg in results">
+				<div class="item" ng-bind-html-unsafe="msg.content">
+					<img ng-src="{{ msg.user.id|getPictureUrl }}" fallback-src="{{ 1|fallback }}" loading-src width="40" class="circle left">
+					<strong>{{ msg.user.first_name }} {{ msg.user.last_name }}</strong>  - 
+					<time class="hint--bottom hint--rounded"  data-hint="{{ msg.created_at | date:'hh:mm a - dd MMMM yyyy' }}" datetime="{{ msg.created_at }}">
+						{{ msg.created_at | date:'dd MMMM' }}
+					</time>
+					<div ng-bind-html="trustAsHtml(msg.content)">{{ msg.content }}</div>
+				</div>
+			</div>
+</div>

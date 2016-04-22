@@ -1,0 +1,60 @@
+/*
+ *= require foundation
+ */
+
+@import 'groupmates/variables';
+
+html {
+	background-color: $groupmates-blue !important;
+}
+
+body {
+	text-align: center;
+}
+
+small, h2, .subtitle {
+	color: white !important;
+	font-weight: 300;
+}
+
+h2 {
+	margin: 0px;
+	padding: 0px;
+}
+
+img {
+	padding-top: 15px;
+	width: 50px;
+	opacity: 0.6;
+}
+
+.subtitle {
+	padding: 0px 10px 10px 0px;
+}
+
+.message {
+	background-color: white !important;
+	margin-right : 28%;
+	margin-left: 28%;
+}
+
+.message-content p {
+	margin-left: 14%;
+	margin-right: 14%;
+	padding-top: 5%;
+	padding-bottom: 5%;
+	opacity: 0.7;
+}
+
+i{
+	font-size : 600% !important;
+}
+
+button {
+	background-color: $groupmates-orange !important;
+	margin-top: 2%;
+	a{
+		color: white !important;
+		text-decoration: none;
+	}
+}

@@ -1,0 +1,319 @@
+/* ---- Files ----- */
+
+.file-title {
+  h4, p, div {
+    display: inline;
+  }
+  p {
+    margin-left: 30px;
+    font-size: 0.8em;
+    color: #666;
+    cursor: pointer;
+  }
+}
+
+#filepath {
+  background: #fff;
+  border: none;
+  margin:0;
+  padding: 0;
+  display: inline-block;
+  &> *:before {
+    font-size: 1.5em;
+  }
+  li {
+    display: inline;
+    vertical-align: middle;
+    &.first {
+      font-weight: bold;
+    }
+    &.last {
+      font-weight: bold;
+    }
+    a {
+      font-size: 1.3em;
+      line-height: 1.25em;
+      text-transform: capitalize;
+    }
+  }
+}
+
+#progress-upload {
+
+
+  .fileinfo {
+    padding-top: 5px;
+    span {
+      float: left;
+      i {
+        font-size: 2.5em;
+        margin-right: 15px;
+      }
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+      li { 
+        &:first-child {
+          font-weight: bold;
+        }
+        font-size: 0.8em;
+        list-style-type: none;
+      }
+    }
+  }
+  .uploadinfo {
+    padding-top: 10px;
+    .progress {
+      height: 15px;
+      margin:0;
+      padding: 0;
+    }
+    .abort-button {
+      margin-top: -35px;
+    }
+  }
+}
+
+#filetoolbar {
+  margin:7px 0px;
+  padding:5px 10px; 
+  background-color:#f7f7f7;
+  border-radius:5px;
+  ul {
+    margin: 0;
+    padding: 0;
+    li {
+      display: inline-block;
+      border-right: 1px solid #dedede;
+      padding:0px 10px;
+
+      .uploadbtn {
+        display: inline;
+        font-size: 0.8em;
+        cursor: pointer;
+      }
+
+      a {
+        font-size: 0.8em;
+        color: #555;
+        i {
+          color: #555;
+        }
+      }
+      &:last-child{
+        border-right: none;
+      }
+    }
+  }
+}
+
+.dragover{
+  opacity: 1.0;
+}
+
+#ghost{
+  pointer-events: none;
+  position: absolute;
+  background-color: #fff;
+  width: 50%;
+  height: auto;
+  z-index: 4;
+  margin-bottom: 0px;
+  border: 0;
+  border-collapse: collapse;
+  thead {
+    tr th {
+      background-color: #fff;
+    }
+  }
+  tbody {
+    tr {
+      background-color: #fff;
+    }
+    tr td {
+      border-top: 1px solid #ddd;
+      vertical-align: middle;
+      font-size: 0.8em;
+      line-height: 1.2em;
+      i {
+        font-size: 1.8em;
+        color: #666;
+        margin-right: 10px;
+      }
+      .userfullname {
+        font-size: 0.8em;
+      }
+    }
+    .active {
+      background-color: aliceblue;
+    }
+  }
+}
+
+#filexplorer {
+  padding: 0 3vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 90vh;
+  table {
+    width: 100%;
+    border: 0;
+    border-collapse: collapse;
+    thead {
+      tr th {
+        background-color: #fff;
+      }
+    }
+    tbody {
+      tr {
+        background-color: #fff;
+      }
+      tr td {
+        border-top: 1px solid #ddd;
+        vertical-align: middle;
+        font-size: 0.8em;
+        line-height: 1.2em;
+        i {
+          font-size: 1.8em;
+          color: #666;
+          margin-right: 10px;
+        }
+        .userfullname {
+          font-size: 0.8em;
+        }
+      }
+      .active {
+        background-color: aliceblue;
+      }
+    }
+  }
+}
+
+
+.drop-zone{
+  width: 100%;
+  text-align: center;
+  height: 50px; //relative to #south
+  line-height: 50px;
+  vertical-align: middle;
+  font-size: 1.25rem;
+  transition: opacity 0.2s;
+  opacity: 1;
+  position: absolute;
+  cursor: pointer;
+  border-top: 3px #858585 dashed;
+}
+
+.drop-zone.ng-hide, .drop-zone.ng-hide-active{
+  opacity: 0;
+}
+
+.dragover-err{
+  background-color: #F60627;
+}
+
+.progress-container{
+  -webkit-transition: opacity 0.2s;
+  transition: opacity 0.2s;
+  opacity: 1;
+}
+
+.progress-container.ng-hide, .progress-container.ng-hide-active{
+  opacity: 0;
+}
+
+.abort-button{
+  float: right;
+  transition: color 0.2s ease-out 0.1s;
+  font-size: 2.50rem;
+  color: #FF0927;
+  padding: 5px;
+  background: none;
+  cursor: pointer;
+  font-family: "Lato", "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+}
+
+.abort-button:hover{
+    background: none;
+    color: #B10102;
+  }
+
+  .errors{
+    color: red;
+  }
+
+.inline-edit{
+  display: inline-block;
+  width: 80%;
+
+  input{
+    margin: 0px;
+  }
+}
+
+.back{
+  background-color: rgba(0,0,0,0.85);
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  z-index: 1;
+  top: 0px;
+  right: 0px;
+}
+
+.preview{
+  max-width: 90%;
+  max-height: 90%;
+  width: auto;
+  height: auto;
+  z-index: 5;
+  position: absolute;
+  text-align: center;
+  margin: auto;
+  right: 1px;
+  left: 1px;
+  top: 1px;
+  bottom: 1px;
+}
+
+.full{
+  width: 100%;
+  height: 100%;
+  background-color: white;
+}
+
+#table-dialog .ngdialog-content {
+  width: 50%;
+  table {
+    width: 100%;
+    margin: 0;
+    thead {
+      tr th {
+        background-color: #fff;
+      }
+    }
+    tbody {
+      tr {
+        background-color: #fff;
+      }
+      tr td {
+        border-top: 1px solid #ddd;
+        vertical-align: middle;
+        font-size: 0.8em;
+        line-height: 1.2em;
+        i {
+          font-size: 1.8em;
+          color: #666;
+          margin-right: 10px;
+        }
+        .userfullname {
+          font-size: 0.8em;
+        }
+      }
+      .active {
+        background-color: aliceblue;
+      }
+    }
+  }
+}

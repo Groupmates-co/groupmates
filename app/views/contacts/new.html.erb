@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <h3 class="text-center">
+      <a href="<%= root_path %>"><%= image_tag "groupmates_icon2.png", size: "60x60" %></a>
+    </h3>
+
+  <% flash.each do |name, msg| -%>
+    <div data-alert class="alert-box <%= name %>"><%= msg %>
+      <a href="#" class="close">&times;</a>
+    </div>
+  <% end %>
+
+    <p class="text-justify">Wanna say hi, join our team, report a bug or give us some suggestions? Fill up the form.</p>
+
+    <%= simple_form_for @contact, :html => {:class => 'form-horizontal' } do |f| %>
+    <%= f.text_field :name, :placeholder => "Full name", :required => true %>
+    <%= f.text_field :email, :placeholder => "Email", :required => true %>
+    <%= f.text_area :message, :placeholder =>"Your message", :required => true, :rows => 6 %>
+    <div>
+      </br>
+      <button role="submit" class="button primary expand"><i class="fa fa-paper-plane-o"></i> &nbsp; Send a pigeon</button>
+    </div>
+  <% end %>
+  </div>
+</div>

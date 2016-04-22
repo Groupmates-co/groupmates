@@ -1,0 +1,18 @@
+<h1>Messages Search</h1>
+ 
+<%= form_for search_path, method: :get do |f| %>
+  <p>
+    <%= f.label "Search for" %>
+    <%= text_field_tag :q, params[:q] %>
+    <%= submit_tag "Go", name: nil %>
+  </p>
+<% end %>
+ 
+<ul>
+  <% @messages.each do |message| %>
+    <li>
+      <%= message.try(:highlight).try(:content) ? message.highlight.content[0].html_safe : message.content %> 
+      (<%= message.id %>)
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Groupmates</title>
+    <meta name="description" content="Groupmates is an Innovating collaboration tool for students offering: Real-time instant messenger and notification system, An easy way to share files and more."/>
+    <meta name="author" content="Thomas Quiroga"/>
+    <meta name="copyright" content="Groupmates, all right reserved"/>
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic|Montserrat:400,700|Vollkorn:400italic,400|Source+Sans+Pro:200,300,400' rel='stylesheet' type='text/css'>
+    <%= csrf_meta_tags %>
+    <%= stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true %>
+    <%= stylesheet_link_tag "user", media: "all", "data-turbolinks-track" => true %>
+    <%= javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js", media: "all", "data-turbolinks-track" => true %>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-48385432-4', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
+
+    </script>
+  </head>
+  <body>
+
+    <% if user_signed_in? %>
+    <div id="navigation" class="contain-to-grid">
+      <nav class="top-bar" data-topbar>
+        <ul class="title-area">
+          <li class="name">
+            <h1>
+              <a href="<%= url_for root_path %>">
+                <%= image_tag "groupmates_logo_2.png", width: 150, alt: "Groupmates" %>
+              </a>
+            </h1>
+          </li>
+          <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+        </ul>
+        <section class="top-bar-section">
+          <!-- Right Nav Section -->
+          <ul class="right">
+            <li><%= link_to 'My Projects', projects_path %></li>
+            <li class="has-dropdown">
+                <a href="#"><%= image_tag user_image_url(:thumb), size: "40x40", class: "circle"  %> &nbsp; <strong><%= "#{current_user.first_name} #{current_user.last_name}" %></strong></a>
+                <ul class="dropdown">
+                    <li><%= link_to 'Edit profile', edit_user_registration_path, :class => 'navbar-link' %></li>
+                    <li><%= link_to "Sign out", destroy_user_session_path, method: :delete, :class => 'navbar-link'  %></li>
+                </ul>
+            </li>
+          </ul>
+        </section>
+      </nav>
+    </div>
+    <% end %>
+
+    <% if content_for?(:alerts) %>
+      <%= yield(:alerts) %>
+    <% else %>
+      <% flash.each do |name, msg| -%>
+        <div data-alert class="alert-box <%= name %> text-center">
+          <%= msg %>
+          <a href="#" class="close">&times;</a>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= yield %>
+
+    <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+    <%= javascript_include_tag "user", "data-turbolinks-track" => true %>
+  </body>
+</html>

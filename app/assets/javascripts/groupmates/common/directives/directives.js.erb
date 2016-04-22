@@ -1,0 +1,277 @@
+(function() {
+	'use strict';
+
+	angular
+
+		.module('groupmates.directives', ['ngAnimate'])
+
+	.directive('ngEnter', function() {
+		return function(scope, element, attrs) {
+			element.bind("keydown keypress", function(event) {
+				if (event.which === 13) {
+					scope.$apply(function() {
+						scope.$eval(attrs.ngEnter);
+					});
+					event.preventDefault();
+				}
+			});
+		};
+	})
+
+	.directive('ngEsc', function() {
+		return function(scope, element, attrs) {
+			element.bind("keydown keypress", function(event) {
+				if (event.which === 27) {
+					scope.$apply(function() {
+						scope.$eval(attrs.ngEsc);
+					});
+					event.preventDefault();
+				}
+			});
+		};
+	})
+
+	/* Resize the chat */
+	.directive('resizeChat', ['$window', function($window) {
+		return {
+			link: function(scope, elm, attrs) {
+
+				//Impossible to get dynamically the height of #north, no idea why ...
+				var north = 50; //50px in the CSS
+				var fixedElements = north + parseInt(angular.element("#south").height());
+
+				//Resize when document load
+				angular.element(".resizable").css("height", angular.element(document).height() - fixedElements);
+				//Resize when window is resized
+				var w = angular.element($window);
+				scope.getWindowDimensions = function() {
+					return {
+						'h': w.height(),
+						'w': w.width()
+					};
+				};
+				scope.$watch(scope.getWindowDimensions, function(newValue, oldValue) {
+					//console.log("North: "+ angular.element("#north").height());
+					//console.log("South: "+angular.element("#south").height());
+					//console.log("New size: "+ fixedElements);
+					//console.log(parseInt(angular.element("#north").height()) + ));
+					angular.element(".resizable").css("height", parseInt(newValue.h) - fixedElements);
+				}, true);
+
+				w.bind('resize', function() {
+					scope.$apply();
+				});
+			}
+		}
+	}])
+
+	.directive('fdatepicker', [function() {
+		return {
+			restrict: 'A',
+			link: function(scope, iElement, iAttrs) {
+				$(iElement).fdatepicker()
+			}
+		};
+	}])
+
+	.directive('scroller', [function() {
+		return {
+			restrict: 'A',
+			link: function(scope, elem, attrs) {
+				var rawElement = elem[0]; // new
+				elem.bind('scroll', function() {
+					if (scope.canAddPage && rawElement.scrollTop == 0) {
+						scope.$apply('nextPage()');
+					}
+				});
+			}
+		};
+	}])
+
+	.directive('sorter', [function() {
+		return {
+			restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+			template: "<i ng-class=" + '"' +
+				"{'fa fa-sort-asc' : reverse == false || reverse == null ," +
+				"'fa fa-sort-desc' : reverse == true}" + '"' + "></i>"
+		};
+	}])
+
+	/** Auto focus any element based on a boolean value changing */
+	.directive('autoFocus', ['$timeout', function($timeout) {
+		return {
+			link: function(scope, element, attrs) {
+					/**
+					 * Ensures the element is focused after a change that would
+					 * change its position in a list.
+					 */
+					element.bind('keydown', function(e) {
+					$timeout(function() {
+						element[0].focus();
+					});
+				});
+
+				scope.$watch(attrs.autoFocus, function(value) {
+					if (value === true) {
+						$timeout(function() {
+							element[0].focus();
+							scope[attrs.autoFocus] = false;
+						});
+					}
+				});
+			}
+		};
+	}])
+
+
+	.directive('draggable', function() {
+	    return{
+		    scope: {
+		    	drag: '&'
+		    },
+		    link: function(scope, element) {
+
+		    	var w, h;
+		        var el = element[0];
+		        el.draggable = true;
+
+		        el.addEventListener(
+		            'dragstart',
+		            function(e) {
+		            	var clone = el.cloneNode(true);
+		            	$('#ghost').empty().append(clone);
+		            	w = $("#ghost").width();
+		            	h = $("#ghost").height();
+
+		                e.dataTransfer.effectAllowed = 'move';
+						var img = document.createElement('img');
+						img.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+		                e.dataTransfer.setDragImage(img,0,0);
+	                    scope.$apply('drag()');
+	                    
+
+
+		                return false;
+		            },
+		            false
+		        );
+
+		        el.addEventListener(
+		        	'dragover',
+		        	function(e){
+		        		var name = element.children().eq(1)[0].innerHTML;
+		        		if (name == "Folder") {
+		        			element.addClass("active");
+		        		}
+		        	},
+		        	false
+		        );
+
+		        el.addEventListener(
+		        	'dragleave',
+		        	function(e){
+	        			element.removeClass("active");
+		        	},
+		        	false
+		        );
+
+
+		        el.addEventListener(
+		            'drag',
+		            function(e) {
+	                    $('#ghost').css('left',e.layerX - 0.1*w );
+	                    $('#ghost').css('top',e.layerY + 1.7*h );
+		            },
+		            false
+		        );
+
+		        el.addEventListener(
+		        	'dragend',
+		        	function(e) {
+		        		$('#ghost').empty();
+		        	}, false
+		        );
+	    	}
+		}
+	})
+
+	.directive('droppable', function() {
+	    return {
+	        scope: {
+	            drop: '&' // parent
+	        },
+	        link: function(scope, element) {
+	        	var el = element[0];
+
+				el.addEventListener(
+				    'dragover',
+				    function(e) {
+				        e.dataTransfer.dropEffect = 'move';
+				        // allows us to drop
+				        if (e.preventDefault) e.preventDefault();
+
+				        return false;
+				    },
+				    false
+				);
+
+				el.addEventListener(
+				    'dragenter',
+				    function(e) {
+				        return false;
+				    },
+				    false
+				);
+
+				el.addEventListener(
+				    'dragleave',
+				    function(e) {
+				        return false;
+				    },
+				    false
+				);
+
+	            el.addEventListener(
+	                'drop',
+	                function(e) {
+	                    // Stops some browsers from redirecting.
+	                    if (e.stopPropagation) e.stopPropagation();
+	                    scope.$apply('drop()');
+	                    $('#filexplorer').removeClass("dragover");
+						$('#ghost').empty();
+	                    return false;
+	                },
+	                false
+	            );
+	        }
+	    }
+	})
+
+	.animation('.slide', function() {
+		var NG_HIDE_CLASS = 'ng-hide';
+		return {
+			beforeAddClass: function(element, className, done) {
+				if (className === NG_HIDE_CLASS) {
+					element.slideUp(done);
+				}
+			},
+			removeClass: function(element, className, done) {
+				if (className === NG_HIDE_CLASS) {
+					element.hide().slideDown(done);
+				}
+			}
+		}
+	})
+
+	.directive('showFocus',[ '$timeout', function($timeout) {
+	  return function(scope, element, attrs) {
+	    scope.$watch(attrs.showFocus, 
+	      function (newValue) { 
+	        $timeout(function() {
+	            newValue && element.focus();
+	        });
+	      },true);
+	  };    
+	}]);
+
+})();

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  project_id: 
+  on_time: false
+  from_time: 1
+  to_time: 1
+
+two:
+  user_id: 
+  project_id: 
+  on_time: false
+  from_time: 1
+  to_time: 1

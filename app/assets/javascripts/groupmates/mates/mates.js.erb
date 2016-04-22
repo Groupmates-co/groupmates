@@ -1,0 +1,115 @@
+(function() {
+	'use strict';
+
+	angular
+
+	.module("groupmates.mates",[])
+
+	.config(['$routeProvider', function ($routeProvider) {
+		$routeProvider.when('/mates', {
+			templateUrl:'<%= asset_path("groupmates/mates/mates-tpl.html") %>',
+			controller:'MatesController'
+		});
+	}])
+	.controller("MatesController", MatesController)
+
+	MatesController.$inject = ['$scope', '$rootScope', '$resource', '$timeout','$q', 'Project', 'Invitations', 'User', 'Assignment'];
+
+	function MatesController($scope, $rootScope, $resource, $timeout, $q, Project, Invitations, User, Assignment) {
+
+		$q.all([
+			Project.setProject(),
+			Project.setUser()
+		]).then( function(responses) {
+			$scope.selectedUser = Project.getCurrentUser();
+			$scope.project = Project.getProject();
+			$scope.userId = Project.getUser();
+			$scope.isCreator = Project.isCreator();
+			Invitations.setData().then(function () {
+				$scope.invitations = Invitations.getData();
+			});
+
+			$scope.groupSkype = _.compact(_.map($scope.project.users, function(user) {
+				if (user.id != $scope.userId && user.skype) {
+					return user.skype;
+				}
+			}));
+
+			$scope.editing = {
+				assignment: false,
+				phone: false,
+				skype: false,
+				bio: false
+			};
+		});
+
+		$scope.invite = function(email) {
+			Invitations.invite(email);
+			$scope.invitations = Invitations.getData();			
+			$scope.email = null; //Confirmation msg here?
+		};
+
+		$scope.approveMember = function(invit){
+			Invitations.approveMember(invit).then(function (data) {
+				//Dirty code, replace when Pusher is online
+				if (invit.status == 4){
+					Project.setProject().then(function (data) {
+						$scope.project = Project.getProject();
+					});				
+				}				
+			});
+		};
+
+		$scope.rejectMember = function(invit){
+			Invitations.rejectMember(invit);
+		};
+
+		$scope.selectUser = function(user) {
+			$scope.selectedUser = user;
+		};
+
+		$scope.isMember = function(obj) {
+			return obj!= null && !obj.hasOwnProperty('invited_email');
+		};
+
+		$scope.pendingInvitation = function(inv) {
+			return inv.status !== 4;
+		};
+
+		$scope.hasSkype = function() {
+			return navigator.mimeTypes["application/x-skype"];
+		};
+
+		$scope.$watch(function () { return Project.getUsers(); }, function (newValue, oldValue) {
+    	_.each(Project.getUsers(), function(user) {
+    		if ($scope.selectedUser.id == user.id) {
+    			$scope.selectedUser = user;
+    		}
+    	});
+
+    	$scope.groupSkype = _.compact(_.map($scope.project.users, function(user) {
+				if (user.id != $scope.userId && user.skype) {
+					return user.skype;
+				}
+			}));
+		}, true);
+
+		$scope.$watch('editing', function(newValue, oldValue) {
+			angular.forEach($scope.editing, function(item, key) {
+				if (oldValue[key] == true && newValue[key] == false) {
+					if (key == 'assignment') {
+						Assignment.update($scope.selectedUser);
+					} else {
+						User.update($scope.selectedUser);
+					}
+				} else if (oldValue[key] == false && newValue[key] == true) {
+					$timeout(function() {
+						document.getElementById('edit-' + key).focus();
+					}, 50);
+				}
+			});
+		}, true);
+	}
+
+
+})();

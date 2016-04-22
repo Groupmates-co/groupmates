@@ -1,0 +1,14 @@
+// Place all the styles related to the errors controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+#not_found, #server_error {
+	padding-top: 70px;
+	padding-bottom: 170px;
+
+	h1{
+		font-size: 2.5em;
+	}
+	h2{
+		font-size: 1.5em;
+	}	
+}

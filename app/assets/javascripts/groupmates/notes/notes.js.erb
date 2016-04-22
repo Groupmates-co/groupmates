@@ -1,0 +1,245 @@
+//= require foundation-datepicker/js/foundation-datepicker.js
+
+(function() {
+'use strict';
+
+angular
+
+	.module("groupmates.notes",['ngDialog', 'ngRoute', 'ngSanitize', 'textAngular', 'groupmates.notes.services'])
+
+	.config(['$routeProvider', function ($routeProvider) {
+	  $routeProvider.when('/notes', {
+	    templateUrl:'<%= asset_path("groupmates/notes/notes-tpl.html") %>',
+	    controller:'NotesController'
+	  });
+
+	}])
+
+	.config([ '$provide', function ($provide){
+	    $provide.decorator('taOptions', ['taRegisterTool', '$delegate', function (taRegisterTool, taOptions){
+
+	        taRegisterTool('fullScreen', {
+	            iconclass: "fa fa-arrows-alt",
+	            tooltiptext: "Fullscreen",
+	            action: function(){
+	           //     console.log(this.$window.document);
+	           		if($('#note-form').hasClass('full'))
+	           			$('#note-form').removeClass('full');
+           			else
+	           			$('#note-form').addClass('full');
+	            },
+	            activeState: function() {
+	            	return ($('#note-form').hasClass('full'));
+	            }
+	        });
+
+	        taRegisterTool('exportAsPdf', {
+	            iconclass: "fa fa-file-pdf-o",
+	            tooltiptext: "Export as PDF",
+	            action: function(){
+	            	var id = $('#note-form').data('note-id');
+	            	var url = '<%= Rails.application.routes.url_helpers.exportpdf_path() %>'+'/'+id;
+								window.open(url, '_blank');
+							}
+	        });
+	        taOptions.toolbar[1].push('fullScreen');
+	        return taOptions;
+	    }]);
+	}])
+
+
+
+	/**
+	 * Manage the notes
+	 */
+	.controller("NotesController", NotesController)
+	.controller("SharedNotesController", SharedNotesController)
+	.controller("FavoriteMessagesController", FavoriteMessagesController);
+
+	NotesController.$inject = ['$scope','$timeout','ngDialog','Project','Notes'];
+	SharedNotesController.$inject = ['$scope','$sce','Notes'];
+	FavoriteMessagesController.$inject = ['$scope','$sce','Project', 'Favorites', 'Messages'];
+
+	function NotesController($scope,$timeout,ngDialog,Project,Notes) {
+
+		$scope.recentlySaved = false;
+
+		$scope.fullscreen = false;
+
+		/*
+		$("#notetitle").blur(function() {
+			$timeout(function() {
+				var focused = $(".focussed").first().attr('id');
+				if (focused == undefined) 
+					saveNote();
+			},0);
+		});
+
+		$("#editor").blur(function() {
+			var focused = $(":focus").first().attr('id');
+			if (focused == undefined) 
+				saveNote();
+		});
+		*/
+
+		var initNote = function() {
+			$scope.note = {};
+			$scope.note.permission = false;
+			$scope.wordcount = 0;
+		};
+
+		$scope.init = function(){
+			$scope.notes = Notes.query();
+			initNote();
+		};
+
+		$scope.$watch('note.content', function(newVal, oldVal) {
+			//regular expressions to trim html
+			var words = (String(newVal).replace(/\<[^\>]*?\>/g, '').replace(/&nbsp;/g,"").replace(/ +(?= )/g,'').trim());
+			$scope.wordcount = words.split(' ').length;
+		});
+
+		$scope.addNote = function() {			
+			Notes.save($scope.note, function(data) {
+				$scope.notes.push(data);
+
+				$timeout(function() {
+					$scope.selectNote($scope.notes[$scope.notes.length - 1]);
+					$('#notetitle').focus();
+				});
+			});
+		}
+
+		$scope.selectNote = function(note) {
+			$scope.note = note;
+		}
+
+		$scope.deleteNote = function (note){
+			$scope.deletedNote = note;
+			var dialog = ngDialog.open({
+				template: 'notes-delete-tpl',
+				scope: $scope
+			});
+
+			dialog.closePromise.then(function (data) {
+				if (data.value == true){
+					Notes.delete({'noteId': note.id},function(data) {
+						$scope.notes = _.reject($scope.notes,function(el) { 
+							return el.id === note.id;
+						});
+						initNote();
+					});
+				}
+			});
+		}
+
+		$scope.changePermission = function() {
+			saveNote();
+		}
+
+		$scope.isSelected = function(note){
+			return ($scope.note == note);
+		}
+
+		var delays = [];
+		$scope.startTyping = function() {
+			clearDelays();
+		};
+
+		$scope.stopTyping = function() {
+			clearDelays();
+
+			delays.push(setTimeout(function() {
+				saveNote();
+			}, 1000));
+		};
+
+		var clearDelays = function() {
+			angular.forEach(delays, function(delay) {
+				clearTimeout(delay);
+			});
+			delays = [];
+		}
+
+		var saveNote = function() {
+			$scope.note.user_id = Project.getUser();
+
+			if($scope.note.id) {
+				Notes.update({'noteId':$scope.note.id},$scope.note);
+			} else {
+				Notes.save($scope.note, function(data) {
+					$scope.notes.push(data);
+					$scope.selectNote(data);
+				});
+				//$scope.init();
+			}
+
+			$scope.recentlySaved = true;
+			$timeout(function() {
+				$scope.recentlySaved = false;
+			},3000);
+		}
+	};
+
+	function SharedNotesController($scope,$sce,Notes) {
+		//Necessary to render content into HTML
+		$scope.trustAsHtml = $sce.trustAsHtml;
+		// Controller variables
+		$scope.sharedNotes = Notes.shared();
+		$scope.note = {};
+
+		$scope.selectNote = function(note) {
+			$scope.note = note;
+		}
+		$scope.isSelected = function(note){
+			return ($scope.note == note);
+		}
+	}
+
+	function FavoriteMessagesController($scope,$sce, Project, Favorites, Messages) {
+		$scope.trustAsHtml = $sce.trustAsHtml;
+		$scope.favorites = Favorites.query({'userId':Project.getUser()}, function() {
+			$scope.authors = _.uniq(_.map($scope.favorites, function(favorite) {
+				return favorite.user;
+			}), function(user) {
+				return user.id;
+			});
+
+			$scope.channels = _.uniq(_.map($scope.favorites, function(favorite) {
+				return favorite.message.channel;
+			}), function(channel) {
+				return channel.id;
+			});
+
+			$scope.filtered = $scope.favorites;
+			$scope.filter();
+		});
+
+		$scope.filter = function() {
+			$scope.filtered = _.chain($scope.favorites).filter(function(favorite) {
+				if ($scope.filter.author > 0) {
+					if ($scope.filter.channel > 0) {
+						return favorite.user.id == $scope.filter.author &&
+									 favorite.message.channel.id == $scope.filter.channel;
+					} else {
+						return favorite.user.id == $scope.filter.author;
+					}
+				} else {
+					if ($scope.filter.channel > 0) {
+						return favorite.message.channel.id == $scope.filter.channel;
+					} else {
+						return true;
+					}
+				}
+			}).sortBy(function(favorite) {
+				return favorite.message.created_at;
+			}).value();
+
+			if ($scope.filter.order == 1) {
+				$scope.filtered.reverse();
+			}
+		};
+	}
+
+})();
+

@@ -1,0 +1,249 @@
+<section id="home">
+	<div class="overlay"></div>
+	<div class="row">
+		<div class="large-12 large-centered columns strapline">
+			<h1>Collaboration in a new light</h1>
+			<h3>Open source collaboration tool to enhance education and research</h3>
+
+			<a href="<%= url_for new_user_registration_path %>" class="button primary" id="">
+				<i class="fa fa-desktop"></i> Demo
+			</a>
+			<a href="https://github.com/Groupmates-co/groupmates" class="button primary" id="">
+				<i class="fa fa-github"></i> View on Github
+			</a>
+			<%= image_tag 'groupmates_preview.png' %>
+
+
+			<!-- <p class="readmore floating">
+				<a href="#concept">
+					Read More<br>
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</p> -->
+
+		</div>
+	</div>
+	<!--end of Home slider-->
+</section>
+
+<section id="concept" itemscope itemtype="http://schema.org/Product">
+	<div class="row">
+		<div class="large-12 columns">
+			<h3 class="description" itemprop="description"><span itemprop="name">Groupmates</span> is <strong>a collaboration tool</strong> for students and researchers that integrates everything they need to collaborate in one place.</h3>
+			<hr>
+			<br>
+		</div>
+	</div>
+<!--
+	<div class="row" id="reasons">
+		<div class="small-4 medium-5 large-5 columns number">3</div>
+		<div class="small-8 medium-7 large-7 columns">
+				<span id="reasons_line1">Core reasons</span><br>
+				<span id="reasons_line2">Why you should use</span><br>
+				<div id="reasons_logo" itemprop="logo"><%= image_tag "groupmates_logo2.png" %></div>
+		</div>
+	</div> -->
+
+	<article class="row">
+		<div class="small-12 medium-7 large-8 medium-7-push large-8-push  columns">
+
+			<%= image_tag "collaboration-for-students.jpg", class: "circle show-for-small-only" %>
+
+			<h2>What's Groupmates?</h2>
+
+			<h4>Groupmates is an open source collaboration tool</h4>
+
+			<p>
+				Groupmates is a tool to help students work together. Messages, Files, Calendar, Notes: Everything is organised in the same place and synchronised on all devices. Through a clear and intuitive interface Groupmates improves the way students work as groups.</p>
+			</p>
+
+			<!-- <strong>Exceed your project expectations</strong> -->
+		</div>
+
+		<div class="small-12 medium-5-pull medium-5 large-4 large-4-pull columns">
+			<%= image_tag "collaboration-for-students.jpg", class: "circle hide-for-small-only" %>
+		</div>
+	</article>
+
+	<article class="row">
+		<div class="medium-5 large-4 columns">
+			<%= image_tag "educators.png", class: "circle" %>
+		</div>
+		<div class="medium-7 large-8 columns">
+			<h2>Groupmates Mission</h2>
+
+			<h4>To enhance the performance of groups of students and researchers</h4>
+			<p>Technologies are everywhere, great tools and apps are available on the web to make us more productive. So, why universities portals feel so old and out of date in comparison? Groupmates is open source and aims to bring to universities a modern solution that students and researchers love to use. It also uses the latest technologies to improve user experience.</p>
+			<!-- <strong>Stay focused and achieve your goals</strong> -->
+	 	</div>
+	 </article>
+
+	<!-- <article class="row">
+
+		<div class="medium-7 large-8 columns">
+
+			<%= image_tag "3_collaborate.png", class: "circle show-for-small-only" %>
+
+	 		<h2>Collaborate</h2>
+
+			<h4>The secret of a successful project lies in real time collaboration</h4>
+
+			<p>Groupmates is an intuitive and user-friendly application. It enables your clients, supervisors and other third parties to effortlessly collaborate from anywhere, at any time, in no time.</p>
+
+			<p>Our interface is organized and fully searchable, which makes it unique. This means no more long arduous search for lost emails, files or chats. All you need is literally at your fingertips.</p>
+
+			<strong>Become free from multi-tabs and windows!</strong>
+		</div>
+		<div class="medium-5 large-4 columns">
+			<%= image_tag "3_collaborate.png", class: "circle hide-for-small-only" %>
+		</div>
+	</article> -->
+</section>
+
+<section id="testimonials">
+	<div class="row">
+		<div class="large-12 columns">
+			<h2>What people say about us</h2>
+			<br>
+
+			<ul data-orbit  data-options="navigation_arrows:false; slide_number: false;timer: false;">
+			  <li data-orbit-slide="testimonial-1">
+					<%= image_tag "user_placeholder.png", class: "circle left" %>
+					<blockquote>
+						If the university knew that I was using Google Docs with my students I would get fired, but I just can't use the current portal...
+						Groupmates would be great
+						<cite>Anonymous lecturer</cite>
+					</blockquote>
+			  </li>
+			  <li data-orbit-slide="testimonial-2">
+					<%= image_tag "testimonials_1.jpg", class: "circle left" %>
+					<blockquote>
+						In a nutshell, it offers us an online collaboration resource that is professional, simple, easy to use and productive
+						<cite>Abigail Hay (Student)</cite>
+					</blockquote>
+			  </li>
+			  <li data-orbit-slide="testimonial-3">
+					<%= image_tag "testimonials_2.jpg", class: "circle left" %>
+					<blockquote>
+						Groupmates provides the tools to significantly improve group and individual productivity as well as reducing overheads
+						<cite>Robbie Brown (CEO of UKTeaClub.com)</cite>
+					</blockquote>
+			  </li>
+<!-- 			  <li data-orbit-slide="testimonial-3">
+			    <div>
+			      <h2>Headline 3</h2>
+			      <h3>Subheadline</h3>
+			    </div>
+			  </li> -->
+			</ul>
+
+		</div>
+	</div>
+</section>
+
+<section id="benefits">
+
+	<div class="row">
+		<div class="large-12">
+			<h3>Groupmates serves everything on a plate, so you can focus on your project</h3>
+			<hr>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="large-6 columns">
+			<h4><i class="fa fa-thumbs-up"></i> Convenience</h4>
+			<strong>All your group needs in one place</strong>
+			<p>One single application for your team's needs which can be accessed from anywhere at any time </p>
+
+			<h4><i class="fa fa-folder-open-o"></i> Organise</h4>
+			<strong>Organise information in the way you want</strong>
+			<p>We have made sure that all elements help your team to be organized and informed about the latest team activities.</p>
+
+			<h4><i class="fa fa-share-alt"></i> Sharing</h4>
+			<strong>Share information with members of your choice</strong>
+			<p>Drag and drop your files to upload. Files, tagged messages and notes can be stored and shared with selected collaborators.</p>
+
+			<h4><i class="fa fa-search"></i> Search</h4>
+			<strong>Find lost text or files in few clicks</strong>
+			<p>Use keywords to search for your content in discussions, links or files. Filter it by name, date, author or type.</p>
+		</div>
+
+		<div class="large-6 columns">
+			<h4><i class="fa fa-lock"></i> Privacy </h4>
+			<strong>Gain full control of privacy</strong>
+			<p>The information you store is secure and belongs to you. Privacy levels give  you full control of your privacy.</p>
+
+			<h4><i class="fa fa-flag-o"></i> Notifications</h4>
+			<strong>Stay up-to-date </strong>
+			<p>Create events and deadlines. Set up reminders and receive notifications.</p>
+
+			<h4><i class="fa fa-list-ol"></i> File versioning</h4>
+			<strong>Track your documents</strong>
+			<p>No more lost information. All file versions are stored so you can keep track of changes to your files.</p>
+
+			<h4><i class="fa fa-share-square-o"></i> Migrate</h4>
+			<strong>Export/import and synchronize your data</strong>
+			<p>Synchronize and migrate your data and activities  between your favourite platforms such as Google, Apple, Dropbox etc….</p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="large-12">
+			<hr>
+			<h3 class="text-center">We're working hard to make this the absolute best place for your projects</h3>
+		</div>
+	</div>
+
+</section>
+
+<!-- 			<h4><i class="fa fa-clock-o"></i> Commands</h4>
+			<strong>Use simple shortcuts to make your work faster</strong>
+			<p>Quick interaction shortcuts  using “+” or “@” symbols  save your time. </p> -->
+		<!--
+		<div class="large-4 columns">
+			<h4><i class="fa fa-clock-o"></i> Devices</h4>
+			<strong>Access Groupmates from any device</strong>
+			<p>Easy access on desktop , phone or a tablet on the go.</p>
+		</div>
+
+		<div class="large-4 columns">
+			<h4><i class="fa fa-clock-o"></i> Private servers</h4>
+			<strong>Get advantages running  groupmates on your servers</strong>
+			<p>Gain full control of security and settings on your private servers with no worries about technical knowledge. Achieve greater levels of personalisation and performance.</p>
+		</div>
+		-->
+
+<section id="subscribe">
+	<div class="row">
+		<div class="large-12 columns text-center">
+			<strong>Get involved, any contribution is welcome:<br>
+				Code, design, translation, copywriting...
+			</strong><br>
+			<br>
+			<a href="https://github.com/Groupmates-co/groupmates" class="button warning">
+				I want to contribute
+			</a>
+		</div>
+	</div>
+</section>
+
+<!-- <section id="details">
+	<div class="row">
+		<div class="large-12">
+			<h2 class="text-center">We provide the best of both worlds</h2>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="small-6 small-collapse medium-6 medium-collapse large-6 large-collapse columns separator">
+			<h3><i class="fa fa-briefcase"></i> &nbsp; Business</h3>
+			<a href="<%= business_path %>"><%= image_tag "collaboration-in-business.jpg", class: "circle" %></a>
+		</div>
+		<div class="small-6 small-collapse medium-6 medium-collapse large-6 large-collapse columns">
+			<h3><i class="fa fa-university"></i> &nbsp; Education</h3>
+			<a href="<%= education_path %>"><%= image_tag "collaboration-for-students.jpg", class: "circle" %></a>
+		</div>
+	</div>
+</section> -->

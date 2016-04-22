@@ -1,0 +1,63 @@
+<div id="new-project">
+  
+  <h3 class="text-center"><%= current_user.projects.any? ? "Create a new project" : "Create your first project" %></h3>
+
+  <div class="row">
+    <div class="small-12 medium-8 large-6 small-centered medium-centered large-centered columns main-block">
+      <p class="text-center"><%= current_user.projects.any? ? "Create a new project and invite your mates to get started." : "Welcome to Groupmates! Create your first project to get started." %></p>
+      
+      <%= form_for @project do |f| %>
+      <% if @project.errors.any? %>
+      <div id="error_explanation">
+        <h6><%= pluralize(@project.errors.count, "error") %> prohibited
+        this project from being saved:</h6>
+        <ul>
+          <% @project.errors.full_messages.each do |msg| %>
+          <li><label class="error"><%= msg %></label></li>
+          <% end %>
+        </ul>
+      </div>
+      <% end %>
+      
+      <small class="right" id="name-available"></small>
+      <%= f.label :name %>
+      <%= f.text_field :name %>
+      
+      <%= f.label :description %>
+      <%= f.text_area :description, maxlength: 300 %>
+
+      <%= f.label :duration %>
+        <div class="row collapse postfix-radius prefix-radius">
+          <div class="small-3 columns">
+            <span class="prefix newDate">
+              <i class="fa fa-calendar"></i></span>
+          </div>
+          <div class="small-6 columns">
+            <%= f.text_field :duration %>
+          </div>
+          <div class="small-3 columns">
+            <span class="postfix">Days</span>
+          </div>
+        </div>
+
+        <h5>Project members</h5>
+        <div class="row collapse" id="members-list">
+          <%= email_field_tag 'member[1]', nil, placeholder: "Email of your groupmate", class: 'member-email' %>
+        </div>
+
+        <p><a href="#" id="add_member">+ Add more members</a><br><br></p>
+      
+      <%= f.submit "Create the project", :class => "button expand" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-12 medium-8 large-6 small-centered medium-centered large-centered columns extras">
+      <p class="text-center">
+        <span>I will do it later, </span> <a href="<%= projects_path %>">Skip this</a>
+      </p>
+    </div>
+  </div>
+
+</div>

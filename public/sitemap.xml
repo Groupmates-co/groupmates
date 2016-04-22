@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+<url>
+  <loc>https://groupmates.uk/</loc>
+</url>
+<url>
+  <loc>https://groupmates.uk/users/sign_in</loc>
+</url>
+<url>
+  <loc>https://groupmates.uk/users/sign_up</loc>
+</url>
+<url>
+  <loc>https://groupmates.uk/team</loc>
+</url>
+<url>
+  <loc>https://groupmates.uk/contact</loc>
+</url>
+<url>
+  <loc>https://groupmates.uk/terms-of-conditions</loc>
+</url>
+<url>
+  <loc>https://groupmates.uk/users/password/new</loc>
+</url>
+<url>
+  <loc>https://groupmates.uk/cookies-policy</loc>
+</url>
+</urlset>

@@ -1,0 +1,176 @@
+<div id="north" class="row">	
+	<a ng-show="hasSkype && groupSkype.length" href="skype:{{ groupSkype }}?call" class="right hint--left hint--rounded" data-hint="Group Call on Skype"><i class="fa fa-skype fa-2x skype"></i></a>
+	<h4><i class="fa fa-users"></i> Mates</h4>
+</div>
+
+<div ng-app="groupmates.mates">
+	<div class="row">
+		<div class="small-12 medium-12 large-5 columns">
+			<section id="invitation" class="well">
+					<ul class="members-list">
+						<li ng-repeat="member in project.users" ng-click="selectUser(member, 1)" ng-class="{selected: selectedUser.id == member.id }">
+							<img ng-src="{{ member.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src  class="left circle"> 
+							<strong>{{ member.first_name }} {{ member.last_name }} <span ng-show="(userId == member.id)">(You)</span></strong><br>
+							<span class="indicator" ng-class="{'online': ($root.presences.get(member.id) != null)}"></span>  
+							<span class="lastonline" ng-if="($root.presences.get(member.id) != null)">Online</span>
+							<span class="lastonline" ng-if="!($root.presences.get(member.id) != null)">
+								Last online {{ member.last_project_quit | getRelativeDate }}
+							</span>
+						</li>
+						
+						<li ng-repeat="invitation in invitations| filter: pendingInvitation" ng-class="{selected: selectedUser == invitation }" ng-show="invitation.status != 5 || isCreator" ng-click="selectUser(invitation,0)">
+							<img class="left circle" ng-src="{{ 0 | getPictureUrl }}" fallback-src="{{ 1|fallback }}" loading-src >
+							<strong>{{invitation.invited_email}}</strong><br>
+							<span class="invitstatus"><i ng-class="{'fa fa-spinner fa-spin': (invitation.status == 3),'fa fa-envelope-o': (invitation.status < 3)  }" class="fa "></i> &nbsp; {{invitation.status | getInvitationStatus}}</span>
+
+							<div ng-show="(invitation.status == 1 || invitation.status == 3) && isCreator" class="right">
+								<a ng-click="approveMember(invitation)"><span class="success round label"><i class="fa fa-check"></i></span></a>
+								<a ng-click="rejectMember(invitation)"><span class="alert round label"><i class="fa fa-close"></i></span></a>
+							</div>
+						</li>
+
+						<li>
+							<form name="invitation" ng-submit="invite(email)">
+							<div class="row collapse">
+								<div class="small-2 colums">
+									<img class="left circle" ng-src="{{ 0 | getPictureUrl }}" fallback-src="{{ 1|fallback }}" loading-src>
+								</div>
+        				<div class="small-7 columns">
+        					<input type="email" name="email" ng-model="email" placeholder="supermate@email.com"/>
+        				</div>
+        				<div class="small-2 columns">
+        					<button class="button postfix" type="submit" ng-disabled="invitation.email.$dirty && invitation.email.$invalid">Invite</button>
+          				<!-- <a href="#" >Go</a> -->
+        				</div>	
+							</form>
+								<span class="invalid" ng-show="invitation.email.$dirty && invitation.email.$invalid">
+									<small ng-show="invitation.email.$error.email">Invalid email address.</small>
+								</span>
+						</li>
+					</ul>
+				</section>
+			</div>
+
+			<div class="small-12 medium-12 large-7 columns">
+				<section id="mate-profile" class="paper">
+
+					<div ng-if="isMember(selectedUser)">
+						<div class="row">
+							<div class="small-12 medium-12 large-2 columns profile-picture-container">
+								<img ng-src="{{ selectedUser.profile_picture }}" fallback-src="{{ 1|fallback }}" loading-src  class="circle profile-picture">
+							</div>
+
+							<div class="small-12 medium-12 large-10 columns">
+								<div ng-if="selectedUser.id != userId">
+									<a href="#messenger" class="right action-btn circle"><i class="fa fa-comment"></i></a>
+									<a href="mailto:{{ selectedUser.email }}" class="right action-btn circle"><i class="fa fa-envelope"></i></a>
+									<a ng-show="hasSkype && selectedUser.skype" href="skype:{{ selectedUser.skype }}?call" class="right hint--bottom hint--rounded" data-hint="Call {{ selectedUser.first_name }} on Skype"><i class="fa fa-skype fa-2x skype"></i></a>
+								</div>
+
+								<h4>
+									{{ selectedUser.fullname }}<br>
+									<div ng-if="selectedUser.id == userId">
+										<small>
+											<span ng-hide="editing.assignment" ng-click="editing.assignment = true">{{ !selectedUser.assignment ? 'No role' : selectedUser.assignment }}</span>
+											<input type="text" id="edit-assignment" ng-model="selectedUser.assignment" ng-show="editing.assignment" ng-blur="editing.assignment = false"></textarea>
+										</small>
+									</div>
+									<div ng-if="selectedUser.id != userId">
+										<small>
+											<span>{{ !selectedUser.assignment ? 'No role' : selectedUser.assignment }}</span>
+										</small>
+									</div>
+								</h4>
+
+								<p>
+									&nbsp; 
+									<span class="indicator" ng-class="{'online': ($root.presences.get(selectedUser.id) != null)}"></span> 
+									<span ng-if="($root.presences.get(selectedUser.id) != null)">Online</span>
+									<span ng-if="!($root.presences.get(selectedUser.id) != null)">
+										Last online {{ selectedUser.last_project_quit | getRelativeDate }}
+									</span>
+								</p>
+
+								<p>
+									<div class="row">
+										<div class="small-1 medium-1 large-1 column">
+											<i class="fa fa-envelope-o"></i>
+										</div>
+										<div class="small-11 medium-11 large-11 columns">
+											<span ng-bind="selectedUser.email"></span>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="small-1 medium-1 large-1 column">
+											<i class="fa fa-phone"></i>
+										</div>
+										<div ng-if="selectedUser.id == userId">
+											<div class="small-11 medium-11 large-11 columns">
+												<span ng-hide="editing.phone" ng-click="editing.phone = true">{{ !selectedUser.phone ? 'N/A' : selectedUser.phone }}</span>
+												<input type="text" id="edit-phone" ng-model="selectedUser.phone" ng-show="editing.phone" ng-blur="editing.phone = false"></textarea>
+											</div>
+										</div>
+										<div ng-if="selectedUser.id != userId">
+											<div class="small-11 medium-11 large-11 columns">
+												<span>{{ !selectedUser.phone ? 'N/A' : selectedUser.phone }}</span>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="small-1 medium-1 large-1 column">
+											<i class="fa fa-skype"></i>
+										</div>
+										<div ng-if="selectedUser.id == userId">
+											<div class="small-11 medium-11 large-11 columns">
+												<span ng-hide="editing.skype" ng-click="editing.skype = true">{{ !selectedUser.skype ? 'N/A' : selectedUser.skype }}</span>
+												<input type="text" id="edit-skype" ng-model="selectedUser.skype" ng-show="editing.skype" ng-blur="editing.skype = false"></textarea>
+											</div>
+										</div>
+										<div ng-if="selectedUser.id != userId">
+											<div class="small-11 medium-11 large-11 columns">
+												<span>{{ !selectedUser.skype ? 'N/A' : selectedUser.skype }}</span>
+											</div>
+										</div>
+									</div>
+								</p>
+
+								<h5>About {{ selectedUser.first_name }}</h5>
+								<div ng-if="selectedUser.id == userId">
+									<span ng-hide="editing.bio" ng-click="editing.bio = true">{{ !selectedUser.bio.length ? selectedUser.first_name + ' hasn\'t written a bio yet.' : selectedUser.bio }}</span>
+									<textarea id="edit-bio" ng-model="selectedUser.bio" ng-show="editing.bio" ng-blur="editing.bio = false"></textarea>
+								</div>
+								<div ng-if="selectedUser.id != userId">
+									{{ !selectedUser.bio.length ? selectedUser.first_name + ' hasn\'t written a bio yet.' : selectedUser.bio }}
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div ng-if="!isMember(selectedUser)">
+						<div class="small-12 medium-12 large-2 columns profile-picture-container">
+							<img class="left circle" ng-src="{{ 0 | getPictureUrl }}" fallback-src="{{ 1|fallback }}" loading-src >
+						</div>
+						<h5>{{ selectedUser.invited_email }}</h5>
+						<p><strong>Status:</strong> &nbsp; 
+							<span ng-show="selectedUser.status == 1">
+								<i class="fa fa-envelope-o"></i> &nbsp; Invitation sent, Approval required
+							</span>
+							<span ng-show="selectedUser.status == 2">
+								<i class="fa fa-envelope-o"></i> &nbsp; Invitation sent
+							</span>
+							<span ng-show="selectedUser.status == 3">
+								<i class="fa fa-spinner fa-spin"></i> &nbsp; Pending
+							</span>
+							<span ng-show="selectedUser.status == 5">
+								<i class="fa fa-cross"></i> &nbsp; Rejected
+							</span>
+							<br>
+							<span class="invitetime">Invited on <strong>{{ selectedUser.created_at| date: 'dd MMM yyyy H:mm' }}</strong> by <strong>{{ selectedUser.invited_by.fullname }}</strong>
+						</p>
+					</div>
+				</section>
+			</div>
+	</div>
+</div>
